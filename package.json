@@ -1,0 +1,85 @@
+{
+    "name": "lupdo-mssql",
+    "version": "0.0.1",
+    "description": "Sql Server Driver For Lupdo",
+    "author": "Claudio Pennati <claudio.pennati@gmail.com>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Lupennat/lupdo-mssql.git"
+    },
+    "keywords": [
+        "database",
+        "abstraction",
+        "layer",
+        "pdo",
+        "sql server",
+        "sqlsrv",
+        "mssql",
+        "lupdo"
+    ],
+    "main": "dist/cjs/index.js",
+    "module": "./dist/esm/index.js",
+    "types": "./dist/typings/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./dist/cjs/index.js",
+            "import": "./dist/esm/index.js",
+            "types": "./dist/typings/index.d.ts"
+        }
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "prepublishOnly": "safe-publish-latest && npm run build",
+        "prepublish": "not-in-publish || npm run prepublishOnly",
+        "postinstall": "patch-package",
+        "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:types",
+        "build:cjs": "tsc",
+        "build:esm": "tsc -p ./typescript/tsconfig.esm.json",
+        "build:types": "tsc -p ./typescript/tsconfig.types.json",
+        "clean": "rimraf ./dist",
+        "local:test": "npm run db:up && npm run test:mssql17 && npm run test:mssql19 && npm run test:mssql22 && npm run db:down",
+        "local:coverage": "npm run db:up && npm run test:mssql22:coverage && npm run db:down",
+        "test:mssql17": "npm run lint && cross-env DB=mssql17 TZ='Africa/Algiers' jest --config test/jest.config.js",
+        "test:mssql19": "npm run lint && cross-env DB=mssql19 TZ='Africa/Algiers' jest --config test/jest.config.js",
+        "test:mssql22": "npm run lint && cross-env DB=mssql22 TZ='Africa/Algiers' jest --config test/jest.config.js",
+        "test:mssql22:coverage": "npm run lint && cross-env DB=mssql22 TZ='Africa/Algiers' jest --config test/jest.config.js --coverage",
+        "test:coverage": "npm run lint && jest --config test/jest.config.js --coverage",
+        "test:db": "npm run lint && jest --config test/jest.config.js",
+        "lint": "eslint --ext \".js,.jsx,.ts,.tsx\" \"./src\"",
+        "lint:fix": "eslint --fix --ext \".js,.jsx,.ts,.tsx\" \"./src\"",
+        "db:up": "docker compose -f docker-compose.yml up --build -d mssql17 mssql19 mssql22 && docker-compose -f docker-compose.yml up waitmssql17 waitmssql19 waitmssql22",
+        "db:down": "docker compose -f docker-compose.yml down -v"
+    },
+    "engines": {
+        "node": "^14.19.0 || ^16.10.0 || >=18.0.0"
+    },
+    "devDependencies": {
+        "@types/jest": "^29.2.4",
+        "@typescript-eslint/eslint-plugin": "^5.46.1",
+        "@typescript-eslint/parser": "^5.46.1",
+        "cross-env": "^7.0.3",
+        "eslint": "^8.29.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "jest": "^29.3.1",
+        "prettier": "^2.8.1",
+        "reflect-metadata": "^0.1.13",
+        "rimraf": "^3.0.2",
+        "safe-publish-latest": "^2.0.0",
+        "ts-jest": "^29.0.3",
+        "typescript": "^4.9.4"
+    },
+    "dependencies": {
+        "@js-temporal/polyfill": "0.4.3",
+        "@types/tedious": "4.0.9",
+        "dayjs": "^1.11.7",
+        "lupdo": "^3.1.2",
+        "moment-timezone": "^0.5.40",
+        "patch-package": "^6.5.1",
+        "tedious": "15.1.2",
+        "tslib": "^2.4.1"
+    }
+}

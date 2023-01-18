@@ -1,0 +1,70 @@
+version: '3'
+services:
+    mssql17:
+        image: mcr.microsoft.com/mssql/server:2017-latest
+        ports:
+            - '21433:1433'
+        environment:
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=lupdo@s3cRet
+        healthcheck:
+            test: /opt/mssql-tools/bin/sqlcmd -S mssql17 -U sa -P 'lupdo@s3cRet' -Q 'select 1'
+
+    waitmssql17:
+        image: mcr.microsoft.com/mssql/server:2017-latest
+        volumes:
+            - ./src/__tests__/data/mssql.sql:/init-script.sql
+        links:
+            - mssql17
+        depends_on:
+            - mssql17
+        entrypoint:
+            - bash
+            - -c
+            - 'until /opt/mssql-tools/bin/sqlcmd -S mssql17 -U sa -P lupdo@s3cRet -d master -i init-script.sql; do sleep 5; done'
+
+    mssql19:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        ports:
+            - '21434:1433'
+        environment:
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=lupdo@s3cRet
+        healthcheck:
+            test: /opt/mssql-tools/bin/sqlcmd -S mssql19 -U sa -P 'lupdo@s3cRet' -Q 'select 1'
+
+    waitmssql19:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        volumes:
+            - ./src/__tests__/data/mssql.sql:/init-script.sql
+        links:
+            - mssql19
+        depends_on:
+            - mssql19
+        entrypoint:
+            - bash
+            - -c
+            - 'until /opt/mssql-tools/bin/sqlcmd -S mssql19 -U sa -P lupdo@s3cRet -d master -i init-script.sql; do sleep 5; done'
+
+    mssql22:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        ports:
+            - '21435:1433'
+        environment:
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=lupdo@s3cRet
+        healthcheck:
+            test: /opt/mssql-tools/bin/sqlcmd -S mssql22 -U sa -P 'lupdo@s3cRet' -Q 'select 1'
+
+    waitmssql22:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        volumes:
+            - ./src/__tests__/data/mssql.sql:/init-script.sql
+        links:
+            - mssql22
+        depends_on:
+            - mssql22
+        entrypoint:
+            - bash
+            - -c
+            - 'until /opt/mssql-tools/bin/sqlcmd -S mssql22 -U sa -P lupdo@s3cRet -d master -i init-script.sql; do sleep 5; done'

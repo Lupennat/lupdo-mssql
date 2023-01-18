@@ -1,0 +1,103 @@
+diff --git a/node_modules/@types/tedious/index.d.ts b/node_modules/@types/tedious/index.d.ts
+index 720c781..7693654 100755
+--- a/node_modules/@types/tedious/index.d.ts
++++ b/node_modules/@types/tedious/index.d.ts
+@@ -100,9 +100,13 @@ export interface TediousTypes {
+     Bit: TediousType;
+     Char: TediousType;
+     Date: TediousType;
++    DateTemporal: TediousType;
+     DateTime2: TediousType;
++    DateTime2Temporal: TediousType;
+     DateTime: TediousType;
++    DateTimeTemporal: TediousType;
+     DateTimeOffset: TediousType;
++    DateTimeOffsetTemporal: TediousType;
+     Decimal: TediousType;
+     Float: TediousType;
+     Image: TediousType;
+@@ -115,11 +119,13 @@ export interface TediousTypes {
+     Numeric: TediousType;
+     Real: TediousType;
+     SmallDateTime: TediousType;
++    SmallDateTimeTemporal: TediousType;
+     SmallInt        : TediousType;
+     SmallMoney: TediousType;
+     TVP: TediousType;
+     Text: TediousType;
+     Time: TediousType;
++    TimeTemporal: TediousType;
+     TinyInt: TediousType;
+     UDT: TediousType;
+     UniqueIdentifier: TediousType;
+@@ -128,10 +134,70 @@ export interface TediousTypes {
+     Xml: TediousType;
+ }
+ 
++export interface CustomParsers {
++    BigInt?: CustomParserCallback;
++    Binary?: CustomParserCallback;
++    Bit?: CustomParserCallback;
++    Char?: CustomParserCallback;
++    Date?: CustomParserCallback;
++    DateTime?: CustomParserCallback;
++    DateTime2?: CustomParserCallback;
++    DateTimeOffset?: CustomParserCallback;
++    Decimal?: CustomParserCallback;
++    Float?: CustomParserCallback;
++    Image?: CustomParserCallback;
++    Int?: CustomParserCallback;
++    Money?: CustomParserCallback;
++    NChar?: CustomParserCallback;
++    NText?: CustomParserCallback;
++    Real?: CustomParserCallback;
++    SmallDateTime?: CustomParserCallback;
++    SmallInt?: CustomParserCallback;
++    SmallMoney?: CustomParserCallback;
++    Text?: CustomParserCallback;
++    Time?: CustomParserCallback;
++    TinyInt?: CustomParserCallback;
++    UDT?: CustomParserCallback;
++    UniqueIdentifier?: CustomParserCallback;
++    Xml?: CustomParserCallback;
++}
++
++export type ParserCallback = (value: any) => void;
++
++export type CustomParserCallback = (parserCallback: ParserCallback,...value: any[]) => void
++
+ export declare var TYPES: TediousTypes;
+ 
++export interface DateTimeObject {
++    days?: number;
++    minutes? :number;
++    milliseconds? :number;
++    nanoseconds? :number;
++    offset? :number;
++}
++
+ export interface ConnectionOptions {
+ 
++    /**
++     * Custom Parsers For Values Types. (default: `undefined`)
++     */
++    customParsers?: CustomParsers | undefined;
++
++    /**
++     * If true, Numeric and Decimal will be serialized as string. (default: false)
++     */
++    returnDecimalAndNumericAsString?: boolean;
++
++    /**
++     * If true, Dates and Times will be serialized as object. (default: false)
++     */
++    returnDateTimeAsObject?: boolean;
++
++    /**
++     * If true, Money and SmallMoney will be serialized as string. (default: `alse)
++     */
++    returnMoneyAsString?: boolean;
++
+     /**
+      * Port to connect to (default: 1433). Mutually exclusive with options.instanceName.
+      */
