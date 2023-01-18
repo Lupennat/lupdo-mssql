@@ -1,5 +1,5 @@
 diff --git a/node_modules/@types/tedious/index.d.ts b/node_modules/@types/tedious/index.d.ts
-index 720c781..7693654 100755
+index 720c781..2431534 100755
 --- a/node_modules/@types/tedious/index.d.ts
 +++ b/node_modules/@types/tedious/index.d.ts
 @@ -100,9 +100,13 @@ export interface TediousTypes {
@@ -30,7 +30,7 @@ index 720c781..7693654 100755
      TinyInt: TediousType;
      UDT: TediousType;
      UniqueIdentifier: TediousType;
-@@ -128,10 +134,70 @@ export interface TediousTypes {
+@@ -128,10 +134,71 @@ export interface TediousTypes {
      Xml: TediousType;
  }
  
@@ -69,6 +69,7 @@ index 720c781..7693654 100755
  export declare var TYPES: TediousTypes;
  
 +export interface DateTimeObject {
++    startingYear: number;
 +    days?: number;
 +    minutes? :number;
 +    milliseconds? :number;
@@ -94,7 +95,7 @@ index 720c781..7693654 100755
 +    returnDateTimeAsObject?: boolean;
 +
 +    /**
-+     * If true, Money and SmallMoney will be serialized as string. (default: `alse)
++     * If true, Money and SmallMoney will be serialized as string. (default: false)
 +     */
 +    returnMoneyAsString?: boolean;
 +

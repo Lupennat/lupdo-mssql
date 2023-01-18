@@ -1,6 +1,6 @@
 {
     "name": "lupdo-mssql",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Sql Server Driver For Lupdo",
     "author": "Claudio Pennati <claudio.pennati@gmail.com>",
     "license": "MIT",
@@ -46,8 +46,8 @@
         "test:mssql19": "npm run lint && cross-env DB=mssql19 TZ='Africa/Algiers' jest --config test/jest.config.js",
         "test:mssql22": "npm run lint && cross-env DB=mssql22 TZ='Africa/Algiers' jest --config test/jest.config.js",
         "test:mssql22:coverage": "npm run lint && cross-env DB=mssql22 TZ='Africa/Algiers' jest --config test/jest.config.js --coverage",
-        "test:coverage": "npm run lint && jest --config test/jest.config.js --coverage",
         "test:db": "npm run lint && jest --config test/jest.config.js",
+        "test:coverage": "npm run lint && jest --config test/jest.config.js --coverage",
         "lint": "eslint --ext \".js,.jsx,.ts,.tsx\" \"./src\"",
         "lint:fix": "eslint --fix --ext \".js,.jsx,.ts,.tsx\" \"./src\"",
         "db:up": "docker compose -f docker-compose.yml up --build -d mssql17 mssql19 mssql22 && docker-compose -f docker-compose.yml up waitmssql17 waitmssql19 waitmssql22",

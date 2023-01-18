@@ -21,7 +21,7 @@ describe('Mssql Date Temporal', () => {
         await stmt.close();
         let query = await pdo.query('SELECT date FROM test_date WHERE id = ' + id);
         expect(query.fetchColumn(0).get()).toBeNull();
-        query = await pdo.query("SELECT null AS 'date';");
+        query = await pdo.query("SELECT CAST(null AS date) AS 'date';");
         expect(query.fetchColumn(0).get()).toBeNull();
     });
 
@@ -62,9 +62,9 @@ describe('Mssql Date Temporal', () => {
         expect(res).toBe('2007-05-10');
     });
 
-    it('Works Date As Date Ignore Time', async () => {
+    it('Works Date As String Ignore Time', async () => {
         const date = new Date('2007-05-11 23:59:59.999') as TediousDate;
-        date.nanosecondDelta = '0.000999999';
+        date.nanosecondsDelta = 0.000999999;
         const stmt = await pdo.prepare('INSERT INTO test_date (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATE, date)]);
         const id = await stmt.lastInsertId();
@@ -78,7 +78,7 @@ describe('Mssql Date Temporal', () => {
 
     it('Date As Date Can Not Ignore Timezone', async () => {
         const date = new Date('2007-05-12 23:59:59.999 -01:00') as TediousDate;
-        date.nanosecondDelta = '0.000999999';
+        date.nanosecondsDelta = 0.000999999;
         const stmt = await pdo.prepare('INSERT INTO test_date (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATE, date)]);
         const id = await stmt.lastInsertId();

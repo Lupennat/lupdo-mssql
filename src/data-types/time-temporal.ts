@@ -16,7 +16,12 @@ function* generateParameterData(parameter: TediousTemporalScalableParameter): Ge
     const buffer = new writableTrackingBuffer(16);
     const zdt = temporalBinding.instant.toZonedDateTimeISO(temporalBinding.timezone);
 
-    const time = getSqlServerTimeFromTemporalZdt(zdt, scale);
+    let time = getSqlServerTimeFromTemporalZdt(zdt, scale);
+
+    // time must not round to next day
+    if (time / Math.pow(10, scale) === 86400) {
+        time = time - 1;
+    }
 
     switch (scale) {
         case 0:

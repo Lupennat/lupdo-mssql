@@ -60,13 +60,12 @@ class MssqlDriver extends PdoDriver {
                 };
             }
 
-            tediousOptions.options.trustServerCertificate = true;
             tediousOptions.options.debug = undefined;
             tediousOptions.options.rowCollectionOnDone = false;
             tediousOptions.options.rowCollectionOnRequestCompletion = false;
             tediousOptions.options.abortTransactionOnError = false;
             tediousOptions.options.useColumnNames = false;
-            tediousOptions.options.useUTC = true;
+            tediousOptions.options.useUTC = false;
             tediousOptions.options.camelCaseColumns = false;
             tediousOptions.options.debug = {};
             tediousOptions.options.enableConcatNullYieldsNull = true;

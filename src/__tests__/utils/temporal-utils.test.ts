@@ -163,7 +163,8 @@ describe('Temporal Utils', () => {
     });
 
     it('Works Temporal Zdt From Date Time Object', () => {
-        let zdt = temporalZdtFromDateTimeObject('2000', {
+        let zdt = temporalZdtFromDateTimeObject({
+            startingYear: 2000,
             days: 60,
             minutes: 30,
             milliseconds: 60000,
@@ -171,34 +172,41 @@ describe('Temporal Utils', () => {
             offset: 0
         });
         expect(zdt).toBeInstanceOf(Temporal.ZonedDateTime);
-        zdt = temporalZdtFromDateTimeObject('2000', {
+        zdt = temporalZdtFromDateTimeObject({
+            startingYear: 2000,
             minutes: 30,
             milliseconds: 60000,
             nanoseconds: 4500,
             offset: 0
         });
         expect(zdt).toBeInstanceOf(Temporal.ZonedDateTime);
-        zdt = temporalZdtFromDateTimeObject('2000', {
+        zdt = temporalZdtFromDateTimeObject({
+            startingYear: 2000,
             milliseconds: 60000,
             nanoseconds: 4500,
             offset: 0
         });
         expect(zdt).toBeInstanceOf(Temporal.ZonedDateTime);
-        zdt = temporalZdtFromDateTimeObject('2000', {
+        zdt = temporalZdtFromDateTimeObject({
+            startingYear: 2000,
             nanoseconds: 4500,
             offset: 0
         });
         expect(zdt).toBeInstanceOf(Temporal.ZonedDateTime);
-        zdt = temporalZdtFromDateTimeObject('2000', {
+        zdt = temporalZdtFromDateTimeObject({
+            startingYear: 2000,
             offset: 0
         });
         expect(zdt).toBeInstanceOf(Temporal.ZonedDateTime);
-        zdt = temporalZdtFromDateTimeObject('2000', {});
+        zdt = temporalZdtFromDateTimeObject({
+            startingYear: 2000
+        });
         expect(zdt).toBeInstanceOf(Temporal.ZonedDateTime);
     });
 
     it('Works Format to Sql Server String', () => {
-        const zdt = temporalZdtFromDateTimeObject('2000', {
+        const zdt = temporalZdtFromDateTimeObject({
+            startingYear: 2000,
             minutes: 120,
             nanoseconds: 888999900
         });
@@ -229,7 +237,6 @@ describe('Temporal Utils', () => {
 
         expect(t.instant).toBeInstanceOf(Temporal.Instant);
         expect(t.timezone).toBe('+02:00');
-        expect(t.round).toBe(50);
         const zdt = t.instant.toZonedDateTimeISO(t.timezone);
         expect(zdt.year).toBe(2023);
         expect(zdt.month).toBe(1);
@@ -244,11 +251,11 @@ describe('Temporal Utils', () => {
     });
 
     it('Works Instant Timezone From TediousDate', () => {
-        const tDate = new Date(Date.UTC(2023, 0, 1, 0, 0, 0, 0)) as TediousDate;
-        tDate.nanosecondDelta = '0.000999949';
+        const tDate = new Date('2023-01-01 00:00:00.000+00:00') as TediousDate;
+        tDate.nanosecondsDelta = 0.000999949;
         const t = temporalBindingFromTediousDate(tDate, TemporalTypeCheck.FULL);
         expect(t.instant).toBeInstanceOf(Temporal.Instant);
-        expect(t.round).toBe(0);
+        expect(t.timezone).toBe('+01:00');
     });
 
     it('Works String To Temporal Object', () => {
@@ -725,5 +732,9 @@ describe('Temporal Utils', () => {
         expect(nanoSecondsOffsetToTimezone(-15 * 60_000_000_000)).toBe('-00:15');
         expect(nanoSecondsOffsetToTimezone(732 * 60_000_000_000)).toBe('+12:12');
         expect(nanoSecondsOffsetToTimezone(-732 * 60_000_000_000)).toBe('-12:12');
+    });
+
+    it('Works Format Time With Base Date', () => {
+        expect(formatToTime(new Date('2023-01-12 23:59:59.999'), 7)).toBe('23:59:59.9990000');
     });
 });

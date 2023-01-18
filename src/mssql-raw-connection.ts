@@ -19,9 +19,10 @@ class MssqlRawConnection extends PdoRawConnection {
         },
         name?: string
     ): Promise<string | number | bigint | null> {
-        if (affectingResults.lastInsertRowid != null) {
+        if (this.connection == null && !name) {
             return await super.lastInsertId({ affectingResults });
         }
+
         const releaseConnection = this.connection == null;
         const id = await this.executeGetLastIdQuery(
             (await this.generateOrReuseConnection()) as MssqlPoolConnection,
@@ -119,9 +120,8 @@ class MssqlRawConnection extends PdoRawConnection {
             ? new MssqlPreparedRequest(connection, sql, this.useTemporal())
             : new MssqlRequest(connection, sql);
         const res = name ? await request.execute(bindings) : await request.execute();
-
         if (name) {
-            return res[1];
+            return res[2].length > 0 ? res[2][0][0].value : 0;
         } else {
             const row = res[2].pop() as any[];
             return row[0].value;

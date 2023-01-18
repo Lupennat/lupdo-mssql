@@ -21,6 +21,9 @@ import { ObjectParams, Params, ValidBindingsPrimitive } from 'lupdo/dist/typings
 import { TYPES, TediousType } from 'tedious';
 import { MSSQL_PARAM_SMALLDATETIME } from '../constants';
 
+const MATCH_QUOTED = /('[^'\\]*(\\.[^'\\]*)*')/;
+const MATCH_DOUBLE_QUOTED = /("[^"\\]*(\\.[^"\\]*)*")/;
+
 export function sqlQuestionMarkToNumericAtP(sql: string): string {
     let questionCount = 0;
     return sql.replace(/\\?\?/g, match => {
@@ -34,13 +37,40 @@ export function sqlQuestionMarkToNumericAtP(sql: string): string {
 }
 
 export function sqlColumnBindingsToAtP(sql: string, bindings: ObjectParams): string {
-    const sortedKeys = Object.keys(bindings).sort((a, b) => b.length - a.length);
+    return (
+        sql
+            // remove -- comments
+            .replace(/--.*$/gm, '')
+            // remove /* */ comments
+            .replace(/\/\*(\*(?!\/)|[^*])*\*\//g, '')
+            .split(MATCH_QUOTED)
+            .map(part => {
+                if (!part || MATCH_QUOTED.test(part)) {
+                    return part;
+                } else {
+                    return part
+                        .split(MATCH_DOUBLE_QUOTED)
+                        .map(part => {
+                            if (!part || MATCH_DOUBLE_QUOTED.test(part)) {
+                                return part;
+                            } else {
+                                return part.replace(/(::?)([a-zA-Z0-9_]+)/g, (_, prefix, key) => {
+                                    if (prefix !== ':') {
+                                        return prefix + key;
+                                    } else if (key in bindings) {
+                                        return '@' + key;
+                                    }
 
-    for (const key of sortedKeys) {
-        sql = sql.replace(':' + key, '@' + key);
-    }
-
-    return sql;
+                                    return prefix + key;
+                                });
+                            }
+                        })
+                        .join('');
+                }
+            })
+            .join('')
+            .trim()
+    );
 }
 
 export function convertBindingsToDictionary(bindings: Params): ObjectParams {

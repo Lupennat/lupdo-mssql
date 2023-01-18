@@ -47,7 +47,7 @@ export function getTemporalTypeCheck(type: TediousType): TemporalTypeCheck {
         case 'DateTimeTemporal':
         case 'SmallDateTimeTemporal':
             return TemporalTypeCheck.ERROR;
-        case 'DateTimeZoneTemporal':
+        case 'DateTimeOffsetTemporal':
             return TemporalTypeCheck.FULL;
         default:
             return TemporalTypeCheck.NOTIMEZONE;
@@ -160,9 +160,6 @@ function extractTemporalOffsetNanoSecondsFromRegexMatch(
             }
         }
     }
-    if (temporalTypeCheck === TemporalTypeCheck.ERROR && timezone) {
-        throw new TypeError('Conversion failed when converting date and/or time from character string.');
-    }
 
     if (temporalTypeCheck === TemporalTypeCheck.NOTIMEZONE) {
         timezone = '+00:00';
@@ -224,9 +221,9 @@ export function stringToTemporalObject(date: string, temporalTypeCheck: Temporal
 
 export function temporalBindingFromTemporalObject(temporalObject: TemporalObject): TemporalBinding {
     const timezone = nanoSecondsOffsetToTimezone(temporalObject.offsetNanoseconds);
+
     return {
         timezone,
-        round: getSqlServerNanosecondsToAddForRound(temporalObject.microsecond, temporalObject.nanosecond),
         instant: Temporal.Instant.from(
             `${temporalObject.year.toString().padStart(4, '0')}-${temporalObject.month
                 .toString()
@@ -247,11 +244,11 @@ export function temporalBindingFromTediousDate(
 ): TemporalBinding {
     let microsecond = 0;
     let nanosecond = 0;
-    if ('nanosecondDelta' in date) {
-        if (date.nanosecondDelta.length > 5 && temporalTypeCheck === TemporalTypeCheck.ERROR) {
+    if ('nanosecondsDelta' in date) {
+        if ((date.nanosecondsDelta as number).toString().length > 5 && temporalTypeCheck === TemporalTypeCheck.ERROR) {
             throw new TypeError('Conversion failed when converting date.');
         } else {
-            const int = Math.round(Number(date.nanosecondDelta.slice(0, 11)) * 1_000_000_000);
+            const int = Math.round(Number((date.nanosecondsDelta as number).toString().slice(0, 11)) * 1_000_000_000);
             microsecond = Math.floor(int / 1000);
             nanosecond = Math.floor(((int / 1000) % 1) * Math.pow(10, 3));
         }
@@ -326,15 +323,26 @@ export function getSqlServerThreeHundredthsOfSecondFromTemporalZdt(zdt: Temporal
     );
 }
 
-export function temporalZdtFromDateTimeObject(year: string, dto: DateTimeObject): Temporal.ZonedDateTime {
+export function temporalZdtFromDateTimeObject(dto: DateTimeObject): Temporal.ZonedDateTime {
     const timezone = dto.offset ? offsetToTimezone(dto.offset) : '+00:00';
-    const instant = Temporal.Instant.from(`${year}-01-01 00:00:00.000000000${timezone}`);
-    return instant.toZonedDateTimeISO(timezone).add({
+    const instant = Temporal.Instant.from(
+        `${dto.startingYear.toString().padStart(4, '0')}-01-01 00:00:00.000000000${timezone}`
+    );
+    const minutes = (dto.minutes ?? 0) + (dto.offset ?? 0);
+
+    let zdt = instant.toZonedDateTimeISO(timezone).add({
         days: dto.days ?? 0,
-        minutes: dto.minutes ?? 0,
         milliseconds: dto.milliseconds ?? 0,
         nanoseconds: dto.nanoseconds ?? 0
     });
+
+    if (minutes !== 0) {
+        zdt = zdt[minutes > 0 ? 'add' : 'subtract']({
+            minutes: Math.abs(minutes)
+        });
+    }
+
+    return zdt;
 }
 
 export function formatToDate(dateOrZdt: Temporal.ZonedDateTime | TediousDate): string {
@@ -389,10 +397,10 @@ export function formatToTime(dateOrZdt: Temporal.ZonedDateTime | TediousDate, sc
             .padStart(2, '0')}:${dateOrZdt.getSeconds().toString().padStart(2, '0')}.${dateOrZdt
             .getMilliseconds()
             .toString()
-            .padStart(3, '0')}${('nanosecondDelta' in dateOrZdt ? dateOrZdt.nanosecondDelta.slice(5) : '').padEnd(
-            4,
-            '0'
-        )}`;
+            .padStart(3, '0')}${('nanosecondsDelta' in dateOrZdt
+            ? (dateOrZdt.nanosecondsDelta as number).toString().slice(5)
+            : ''
+        ).padEnd(4, '0')}`;
     } else {
         formattedTime = `${dateOrZdt.hour.toString().padStart(2, '0')}:${dateOrZdt.minute
             .toString()
@@ -403,7 +411,9 @@ export function formatToTime(dateOrZdt: Temporal.ZonedDateTime | TediousDate, sc
             .slice(0, 1)}`;
     }
 
-    return formattedTime.slice(0, formattedTime.length - (7 - scale));
+    const fixedScale = 7 - scale;
+    // when scale 0 remove also dot
+    return formattedTime.slice(0, formattedTime.length - (fixedScale === 7 ? 8 : fixedScale));
 }
 
 export function formatToDateTime2(dateOrZdt: Temporal.ZonedDateTime | TediousDate, scale: number): string {
@@ -414,16 +424,4 @@ export function formatToDateTimeOffset(dateOrZdt: Temporal.ZonedDateTime | Tedio
     return `${formatToDate(dateOrZdt)} ${formatToTime(dateOrZdt, scale)} ${
         dateOrZdt instanceof Date ? offsetToTimezone(-dateOrZdt.getTimezoneOffset()) : dateOrZdt.offset
     }`;
-}
-
-export function getSqlServerNanosecondsToAddForRound(microsecond: number, nanosecond: number): number {
-    // sql server round to hundred of nanoseconds
-    // if sum is > 9999 we need to add nanoseconds simulating nanoseconds is 1000
-    const sqlServerNanoseconds = Math.round((microsecond * 1000 + nanosecond) / 100);
-
-    if (sqlServerNanoseconds > 9999) {
-        return 1000 - nanosecond;
-    }
-
-    return 0;
 }

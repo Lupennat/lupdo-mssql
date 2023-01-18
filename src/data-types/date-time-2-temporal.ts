@@ -17,18 +17,14 @@ function* generateParameterData(parameter: TediousTemporalScalableParameter): Ge
 
     const temporalBinding = parameter.value;
 
-    const dateInstant = temporalBinding.instant.add({
-        nanoseconds: temporalBinding.round
-    });
-
     const scale = parameter.scale;
     const buffer = new writableTrackingBuffer(16);
-    const zdt = dateInstant.toZonedDateTimeISO(temporalBinding.timezone);
+    const zdt = temporalBinding.instant.toZonedDateTimeISO(temporalBinding.timezone);
 
     let nextDay = false;
     let time = getSqlServerTimeFromTemporalZdt(zdt, scale);
 
-    if (time / Math.pow(10, scale ?? 7) === 86400) {
+    if (time / Math.pow(10, scale) === 86400) {
         time = 0;
         nextDay = true;
     }

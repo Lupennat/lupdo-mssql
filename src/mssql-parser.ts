@@ -1,4 +1,4 @@
-import { CustomParsers, DateTimeObject, ParserCallback } from 'tedious';
+import { DateTimeObject, ParserCallback } from 'tedious';
 import { toBigInt } from './utils/bindings';
 
 import { TediousDate } from './types';
@@ -41,29 +41,25 @@ export default {
         if (value === null) {
             return parserCallback(null);
         }
-        parserCallback(
-            formatToSmallDateTime(value instanceof Date ? value : temporalZdtFromDateTimeObject('1900', value))
-        );
+        parserCallback(formatToSmallDateTime(value instanceof Date ? value : temporalZdtFromDateTimeObject(value)));
     },
     DateTime: function (parserCallback: ParserCallback, value: DateTimeObject | TediousDate | null): void {
         if (value === null) {
             return parserCallback(null);
         }
-        parserCallback(formatToDateTime(value instanceof Date ? value : temporalZdtFromDateTimeObject('1900', value)));
+        parserCallback(formatToDateTime(value instanceof Date ? value : temporalZdtFromDateTimeObject(value)));
     },
-    Time: function (parserCallback: ParserCallback, value: DateTimeObject | TediousDate, scale: number): void {
+    Time: function (parserCallback: ParserCallback, value: DateTimeObject | TediousDate | null, scale: number): void {
         if (value === null) {
             return parserCallback(null);
         }
-        parserCallback(
-            formatToTime(value instanceof Date ? value : temporalZdtFromDateTimeObject('1900', value), scale)
-        );
+        parserCallback(formatToTime(value instanceof Date ? value : temporalZdtFromDateTimeObject(value), scale));
     },
     Date: function (parserCallback: ParserCallback, value: DateTimeObject | TediousDate | null): void {
         if (value === null) {
             return parserCallback(null);
         }
-        parserCallback(formatToDate(value instanceof Date ? value : temporalZdtFromDateTimeObject('0001', value)));
+        parserCallback(formatToDate(value instanceof Date ? value : temporalZdtFromDateTimeObject(value)));
     },
     DateTime2: function (
         parserCallback: ParserCallback,
@@ -73,20 +69,18 @@ export default {
         if (value === null) {
             return parserCallback(null);
         }
-        parserCallback(
-            formatToDateTime2(value instanceof Date ? value : temporalZdtFromDateTimeObject('0001', value), scale)
-        );
+        parserCallback(formatToDateTime2(value instanceof Date ? value : temporalZdtFromDateTimeObject(value), scale));
     },
     DateTimeOffset: function (
         parserCallback: ParserCallback,
-        value: DateTimeObject | TediousDate,
+        value: DateTimeObject | TediousDate | null,
         scale: number
     ): void {
         if (value === null) {
             return parserCallback(null);
         }
         parserCallback(
-            formatToDateTimeOffset(value instanceof Date ? value : temporalZdtFromDateTimeObject('0001', value), scale)
+            formatToDateTimeOffset(value instanceof Date ? value : temporalZdtFromDateTimeObject(value), scale)
         );
     }
-} as CustomParsers;
+};

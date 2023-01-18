@@ -19,19 +19,15 @@ function* generateParameterData(parameter: TediousTemporalScalableParameter): Ge
 
     const temporalBinding = parameter.value;
 
-    const dateInstant = temporalBinding.instant.add({
-        nanoseconds: temporalBinding.round
-    });
-
     const scale = parameter.scale;
     const buffer = new writableTrackingBuffer(16);
 
-    const utcZdt = dateInstant.toZonedDateTimeISO('+00:00');
+    const utcZdt = temporalBinding.instant.toZonedDateTimeISO('+00:00');
 
     let nextDay = false;
     let time = getSqlServerTimeFromTemporalZdt(utcZdt, scale);
 
-    if (time / Math.pow(10, scale ?? 7) === 86400) {
+    if (time / Math.pow(10, scale) === 86400) {
         time = 0;
         nextDay = true;
     }
@@ -58,7 +54,9 @@ function* generateParameterData(parameter: TediousTemporalScalableParameter): Ge
     buffer.writeUInt24LE(getDaysSinceYearOneDayOneFromTemporalZdt(utcZdt) + (nextDay ? 1 : 0));
     // write offset minutes
     buffer.writeInt16LE(
-        nanoSecondsOffsetToOffset(dateInstant.toZonedDateTimeISO(temporalBinding.timezone).offsetNanoseconds)
+        nanoSecondsOffsetToOffset(
+            temporalBinding.instant.toZonedDateTimeISO(temporalBinding.timezone).offsetNanoseconds
+        )
     );
     yield buffer.data;
 }

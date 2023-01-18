@@ -43,7 +43,7 @@ export interface MssqlPoolConnection extends Connection {
 }
 
 export interface TediousDate extends Date {
-    nanosecondDelta: string;
+    nanosecondsDelta?: number;
 }
 
 export interface TediousTemporalParameter {
@@ -56,6 +56,5 @@ export interface TediousTemporalScalableParameter extends TediousTemporalParamet
 
 export interface TemporalBinding {
     timezone: string;
-    round: number;
     instant: Temporal.Instant;
 }

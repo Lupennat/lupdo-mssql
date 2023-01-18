@@ -21,7 +21,7 @@ describe('Mssql DateTime Temporal', () => {
         await stmt.close();
         let query = await pdo.query('SELECT date FROM test_datetime WHERE id = ' + id);
         expect(query.fetchColumn(0).get()).toBeNull();
-        query = await pdo.query("SELECT null AS 'datetime';");
+        query = await pdo.query("SELECT CAST(null AS datetime) AS 'date'");
         expect(query.fetchColumn(0).get()).toBeNull();
     });
 
@@ -209,10 +209,10 @@ describe('Mssql DateTime Temporal', () => {
     it('Works DateTime As Date Error For Time', async () => {
         const stmt = await pdo.prepare('INSERT INTO test_datetime (date) values (?);');
         let date = new Date('2007-05-12 23:59:59.999 -01:00') as TediousDate;
-        date.nanosecondDelta = '0.000999999';
+        date.nanosecondsDelta = 0.000999999;
         await expect(stmt.execute([TypedBinding.create(PARAM_DATETIME, date)])).rejects.toThrowError();
         date = new Date('2007-05-12 23:59:59.999 -01:00') as TediousDate;
-        date.nanosecondDelta = '0.0009';
+        date.nanosecondsDelta = 0.0009;
         await expect(stmt.execute([TypedBinding.create(PARAM_DATETIME, date)])).rejects.toThrowError();
 
         await stmt.close();
@@ -220,7 +220,7 @@ describe('Mssql DateTime Temporal', () => {
 
     it('DateTime As Date Can Not Ignore Timezone', async () => {
         const date = new Date('2007-05-13 23:59:59.998 -01:00') as TediousDate;
-        date.nanosecondDelta = '0.000';
+        date.nanosecondsDelta = 0.0;
 
         const stmt = await pdo.prepare('INSERT INTO test_datetime (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATETIME, date)]);
@@ -231,5 +231,37 @@ describe('Mssql DateTime Temporal', () => {
         query = await pdo.query("SELECT CAST('2007-05-13 23:59:59.998' AS datetime) AS 'date';");
         expect(res).not.toBe(query.fetchColumn(0).get());
         expect(res).toBe('2007-05-14 01:59:59.997');
+    });
+
+    it('Works DateTime As Incomplete String', async () => {
+        let stmt = await pdo.prepare('INSERT INTO test_datetime (date) values (?);');
+        await stmt.execute([TypedBinding.create(PARAM_DATETIME, '2007-05-15')]);
+        let id = await stmt.lastInsertId();
+        await stmt.close();
+        let query = await pdo.query('SELECT date FROM test_datetime WHERE id = ' + id);
+        let res = query.fetchColumn(0).get();
+        query = await pdo.query("SELECT CAST('2007-05-15' AS datetime) AS 'date';");
+        expect(res).toBe(query.fetchColumn(0).get());
+        expect(res).toBe('2007-05-15 00:00:00.000');
+
+        stmt = await pdo.prepare('INSERT INTO test_datetime (date) values (?);');
+        await stmt.execute([TypedBinding.create(PARAM_DATETIME, '2007-05-15 22:10')]);
+        id = await stmt.lastInsertId();
+        await stmt.close();
+        query = await pdo.query('SELECT date FROM test_datetime WHERE id = ' + id);
+        res = query.fetchColumn(0).get();
+        query = await pdo.query("SELECT CAST('2007-05-15 22:10' AS datetime) AS 'date';");
+        expect(res).toBe(query.fetchColumn(0).get());
+        expect(res).toBe('2007-05-15 22:10:00.000');
+
+        stmt = await pdo.prepare('INSERT INTO test_datetime (date) values (?);');
+        await stmt.execute([TypedBinding.create(PARAM_DATETIME, '22:10')]);
+        id = await stmt.lastInsertId();
+        await stmt.close();
+        query = await pdo.query('SELECT date FROM test_datetime WHERE id = ' + id);
+        res = query.fetchColumn(0).get();
+        query = await pdo.query("SELECT CAST('22:10' AS datetime) AS 'date';");
+        expect(res).toBe(query.fetchColumn(0).get());
+        expect(res).toBe('1900-01-01 22:10:00.000');
     });
 });

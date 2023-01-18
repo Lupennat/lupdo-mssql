@@ -170,7 +170,7 @@ index 0000000..b26ab5b
 +  }
 +}
 diff --git a/node_modules/tedious/lib/value-parser.js b/node_modules/tedious/lib/value-parser.js
-index 43ad796..222dc60 100644
+index 43ad796..b15c4fc 100644
 --- a/node_modules/tedious/lib/value-parser.js
 +++ b/node_modules/tedious/lib/value-parser.js
 @@ -51,18 +51,27 @@ function readFloat(parser, callback) {
@@ -551,7 +551,7 @@ index 43ad796..222dc60 100644
 -      if (useUTC) {
 -        value = new Date(Date.UTC(1900, 0, 1 + days, 0, minutes));
 +      if (asObject) {
-+        value = { days: days, minutes: minutes };
++        value = { startingYear: 1900, days: days, minutes: minutes };
        } else {
 -        value = new Date(1900, 0, 1 + days, 0, minutes);
 +        if (useUTC) {
@@ -576,7 +576,7 @@ index 43ad796..222dc60 100644
 -      if (useUTC) {
 -        value = new Date(Date.UTC(1900, 0, 1 + days, 0, 0, 0, milliseconds));
 +      if (asObject) {
-+        value = { days: days, milliseconds: milliseconds };
++        value = { startingYear: 1900, days: days, milliseconds: milliseconds };
        } else {
 -        value = new Date(1900, 0, 1 + days, 0, 0, 0, milliseconds);
 +        if (useUTC) {
@@ -603,7 +603,7 @@ index 43ad796..222dc60 100644
 -    if (useUTC) {
 -      date = new Date(Date.UTC(1970, 0, 1, 0, 0, 0, value / 10000));
 +    if (asObject) {
-+      date = { nanoseconds: value * 100 };
++      date = { startingYear: 1970, nanoseconds: value * 100 };
      } else {
 -      date = new Date(1970, 0, 1, 0, 0, 0, value / 10000);
 -    }
@@ -633,7 +633,7 @@ index 43ad796..222dc60 100644
 -    if (useUTC) {
 -      callback(new Date(Date.UTC(2000, 0, days - 730118)));
 +    if (asObject) {
-+      callback({ days: days });
++      callback({ startingYear: 1, days: days });
      } else {
 -      callback(new Date(2000, 0, days - 730118));
 +      if (useUTC) {
@@ -649,7 +649,7 @@ index 43ad796..222dc60 100644
 -function readDateTime2(parser, dataLength, scale, useUTC, callback) {
 -  readTime(parser, dataLength - 3, scale, useUTC, time => {
 +function readDateTime2(parser, dataLength, scale, useUTC, asObject, callback) {
-+  readTime(parser, dataLength - 3, scale, asObject ? true : useUTC, asObject, time => {
++  readTime(parser, dataLength - 3, scale, useUTC, asObject, time => {
      // TODO: 'input' is 'time', but TypeScript cannot find "time.nanosecondsDelta";
      parser.readUInt24LE(days => {
        let date;
@@ -657,7 +657,7 @@ index 43ad796..222dc60 100644
 -      if (useUTC) {
 -        date = new Date(Date.UTC(2000, 0, days - 730118, 0, 0, 0, +time));
 +      if (asObject) {
-+        date = { days: days, ...time };
++        date = { ...time, startingYear: 1, days: days };
        } else {
 -        date = new Date(2000, 0, days - 730118, time.getHours(), time.getMinutes(), time.getSeconds(), time.getMilliseconds());
 -      }
@@ -698,7 +698,7 @@ index 43ad796..222dc60 100644
 +      parser.readInt16LE((offset) => {
 +        let date;
 +        if (asObject) {
-+          date = { days: days, ...time, offset: offset }
++          date = { ...time, startingYear: 1, days: days, offset: offset }
 +        } else {
 +          date = new Date(Date.UTC(2000, 0, days - 730118, 0, 0, 0, +time));
 +          Object.defineProperty(date, 'nanosecondsDelta', {

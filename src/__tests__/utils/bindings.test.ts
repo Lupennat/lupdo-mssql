@@ -43,6 +43,28 @@ describe('Utils Bindings', () => {
         expect(sqlColumnBindingsToAtP('SELECT :li,:limit, ":test"', { li: 1, limit: 2 })).toBe(
             'SELECT @li,@limit, ":test"'
         );
+
+        expect(
+            sqlColumnBindingsToAtP(
+                `select to_char(:num, '"Pre:"999" :skipthis Post:" .999'), TO_CHAR(NOW() :: DATE, 'dd/mm/yyyy') from boom WHERE pow = :pow;`,
+                { num: 485.8, pow: 'kaboom' }
+            )
+        ).toBe(
+            `select to_char(@num, '"Pre:"999" :skipthis Post:" .999'), TO_CHAR(NOW() :: DATE, 'dd/mm/yyyy') from boom WHERE pow = @pow;`
+        );
+
+        expect(
+            sqlColumnBindingsToAtP(
+                `select to_char(:num, '"Pre:"999" :skipthis Post:" .999'), TO_CHAR(NOW() :: DATE, 'dd/mm/yyyy') from boom WHERE pow = :pow;`,
+                {}
+            )
+        ).toBe(
+            `select to_char(:num, '"Pre:"999" :skipthis Post:" .999'), TO_CHAR(NOW() :: DATE, 'dd/mm/yyyy') from boom WHERE pow = :pow;`
+        );
+
+        expect(sqlColumnBindingsToAtP(`SELECT :userid::integer as "User:Id"`, { userid: 5 })).toBe(
+            `SELECT @userid::integer as "User:Id"`
+        );
     });
 
     it('Works Convert Bindings To Dictionary', () => {

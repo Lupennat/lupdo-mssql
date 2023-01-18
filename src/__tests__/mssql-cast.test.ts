@@ -230,8 +230,8 @@ describe('Mssql Cast', () => {
         expect(row.float).toBe('1.2345678901234568e+46');
         expect(row.real).toBe('1.2345678605116651e+38');
         expect(row.date).toBe('2014-01-01');
-        // expect(row.datetimeoffset).toBe('2004-10-19 10:23:54.1234567 +06:00');
-        // expect(row.datetimeutc).toBe('2004-10-19 10:23:54.1234567 +00:00');
+        expect(row.datetimeoffset).toBe('2004-10-19 10:23:54.1234567 +06:00');
+        expect(row.datetimeutc).toBe('2004-10-19 04:23:54.1234567 +00:00');
         expect(row.datetime2).toBe('2004-10-19 08:23:54.1234567');
         expect(row.smalldatetime).toBe('2004-10-19 10:24:00.000');
         expect(row.datetime).toBe('2004-10-19 10:23:54.123');

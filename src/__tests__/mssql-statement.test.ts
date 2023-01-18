@@ -41,9 +41,9 @@ describe('Mssql Statement', () => {
         let stmt = await trx.query('SELECT count(*) as total from users');
         const lastId = stmt.fetchColumn<number>(0).get() as number;
 
-        stmt = await trx.query("INSERT INTO users (name, gender) VALUES ('Claudio', 'All');");
+        stmt = await trx.query("INSERT INTO users (name, gender) OUTPUT INSERTED.* VALUES ('Claudio', 'All');");
         expect(await stmt.lastInsertId()).toBeGreaterThan(lastId);
-
+        expect(stmt.fetchColumn(0).get()).toBe(await stmt.lastInsertId());
         await trx.rollback();
 
         await pdo.exec('CREATE TABLE test (id int IDENTITY(1,1), name VARCHAR(100));');
@@ -61,22 +61,24 @@ describe('Mssql Statement', () => {
         await pdo.exec('DROP SEQUENCE test_sequence;');
     });
 
-    it('Works Statement Last Insert Do Not Release Connection', async () => {
+    it('Works Statement Last Insert Id With Sequence in Real Time', async () => {
         const pdo = new Pdo(pdoData.driver, pdoData.config);
-        const trx = await pdo.beginTransaction();
-        let stmt = await trx.query('SELECT TOP 5 * FROM users;');
+        await pdo.exec(
+            'CREATE SEQUENCE "test_sequence2" AS INTEGER START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 100 CYCLE'
+        );
+        await pdo.exec('CREATE TABLE test2 (id int, name VARCHAR(100));');
+        let stmt = await pdo.query('SELECT * FROM test2');
+        stmt = await pdo.query("INSERT INTO test2 (id, name) VALUES (NEXT VALUE FOR test_sequence2, 'Test')");
         expect(await stmt.lastInsertId()).toBeNull();
-        expect(await stmt.lastInsertId('test_sequence')).toBeNull();
-        await trx.rollback();
-        stmt = await pdo.query('SELECT TOP 5 * FROM users;');
+        stmt = await pdo.query('SELECT * FROM test2');
+        expect(await stmt.lastInsertId('test_sequence2')).toBe(1);
+        expect(await stmt.lastInsertId('not_exist_test_sequence')).toBeNull();
         expect(await stmt.lastInsertId()).toBeNull();
-        expect(await stmt.lastInsertId('test_sequence')).toBeNull();
-        const prepared = await pdo.prepare('SELECT TOP (?) * FROM users;');
-        await prepared.execute([5]);
+        stmt = await pdo.query("INSERT INTO test2 (id, name) VALUES (NEXT VALUE FOR test_sequence2, 'Test')");
         expect(await stmt.lastInsertId()).toBeNull();
-        expect(await stmt.lastInsertId('test_sequence')).toBeNull();
-        await prepared.close();
-
+        expect(await stmt.lastInsertId('test_sequence2')).toBe(2);
+        await pdo.exec('DROP TABLE test2;');
+        await pdo.exec('DROP SEQUENCE test_sequence2;');
         await pdo.disconnect();
     });
 
