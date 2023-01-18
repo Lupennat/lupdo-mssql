@@ -14,4 +14,4 @@
 </p>
 
 # lupdo-mssql
-Lupdo driver for SQL Server
+Lupdo driver for SQL Server (BETA)
