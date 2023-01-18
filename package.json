@@ -75,9 +75,7 @@
     "dependencies": {
         "@js-temporal/polyfill": "0.4.3",
         "@types/tedious": "4.0.9",
-        "dayjs": "^1.11.7",
         "lupdo": "^3.1.2",
-        "moment-timezone": "^0.5.40",
         "patch-package": "^6.5.1",
         "tedious": "15.1.2",
         "tslib": "^2.4.1"

@@ -6,14 +6,14 @@ on:
       - main
 
 jobs:
-  mysql:
+  build:
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x, 16.x, 18.x]
-        database-type: [mysql56, mysql57, mysql8]
+        node-version: [18.x, 16.x, 14.x]
+        database-type: [mssql17, mssql19, mssql22]
 
     steps:
       - uses: actions/checkout@v3
@@ -49,55 +49,7 @@ jobs:
         env:
           CI: true
           DB: ${{ matrix.database-type }}
-
-      - name: Stop Database(s)
-        run: |
-          docker-compose \
-            --file "docker-compose.yml" \
-            down
-  mariadb:
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [14.x, 16.x, 18.x]
-        database-type: [mariadb1003, mariadb1004, mariadb1005, mariadb1006, mariadb1007, mariadb1008, mariadb1009, mariadb1010, mariadb1011]
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Start Database(s)
-        run: |
-            docker-compose \
-              --file "docker-compose.yml" \
-              up \
-                --detach \
-                --build \
-                "${{ matrix.database-type }}"
-
-      - name: Run npm install
-        run: npm install
-
-      - name: Initialize Database
-        run: |
-            docker-compose \
-              --file "docker-compose.yml" \
-              up \
-                "wait${{ matrix.database-type }}"
-
-      - name: Build and test
-        run: |
-          npm run build
-          npm run test:db
-        env:
-          CI: true
-          DB: ${{ matrix.database-type }}
+          TZ: "Africa/Algiers"
 
       - name: Stop Database(s)
         run: |
