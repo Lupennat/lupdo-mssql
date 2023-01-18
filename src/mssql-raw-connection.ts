@@ -1,14 +1,8 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import { PdoRawConnection } from 'lupdo';
 import PdoAffectingData from 'lupdo/dist/typings/types/pdo-affecting-data';
 import PdoColumnData from 'lupdo/dist/typings/types/pdo-column-data';
 import { Params, ValidBindingsSingle } from 'lupdo/dist/typings/types/pdo-prepared-statement';
 import PdoRowData from 'lupdo/dist/typings/types/pdo-raw-data';
-
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-dayjs.extend(utc);
-
 import { ColumnMetaData, ColumnValue } from 'tedious';
 import { MSSQL_DATE_BINDING, MSSQL_DATE_BINDING_TEMPORAL } from './constants';
 import MssqlPreparedRequest from './mssql-prepared-request';
