@@ -421,7 +421,7 @@ export function formatToDateTime2(dateOrZdt: Temporal.ZonedDateTime | TediousDat
 }
 
 export function formatToDateTimeOffset(dateOrZdt: Temporal.ZonedDateTime | TediousDate, scale: number): string {
-    return `${formatToDate(dateOrZdt)} ${formatToTime(dateOrZdt, scale)} ${
+    return `${formatToDate(dateOrZdt)} ${formatToTime(dateOrZdt, scale)}${
         dateOrZdt instanceof Date ? offsetToTimezone(-dateOrZdt.getTimezoneOffset()) : dateOrZdt.offset
     }`;
 }

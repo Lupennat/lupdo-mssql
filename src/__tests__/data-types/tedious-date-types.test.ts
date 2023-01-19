@@ -181,8 +181,8 @@ describe('Mssql Tedious Date Types', () => {
         query = await pdo.query("SELECT CAST('2023-01-02 23:59:59.999' AS datetimeoffset) AS 'date';");
         cast = query.fetchColumn(0).get();
         expect(res).not.toBe(cast);
-        expect(res).toBe('2023-01-02 23:59:59.9990000 +01:00');
-        expect(cast).toBe('2023-01-02 23:59:59.9990000 +00:00');
+        expect(res).toBe('2023-01-02 23:59:59.9990000+01:00');
+        expect(cast).toBe('2023-01-02 23:59:59.9990000+00:00');
 
         stmt = await pdo.prepare('INSERT INTO ted_test_time (time) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_TIME, '2023-01-02 23:59:59.999')]);
@@ -257,9 +257,9 @@ describe('Mssql Tedious Date Types', () => {
             "SELECT CAST('2023-01-02 23:59:59.999' AS datetimeoffset) AS 'date';"
         ).execute();
         expect(res[2][0][0].value).not.toBe(cast[2][0][0].value);
-        expect(res[2][0][0].value).toBe('2023-01-02 23:59:59.9990000 +01:00');
+        expect(res[2][0][0].value).toBe('2023-01-02 23:59:59.9990000+01:00');
         // STRING SHOULD BE '2023-01-02 23:59:59.999 +00:00' ORIGINAL VALUE IS COMPLETLY LOST
-        expect(cast[2][0][0].value).toBe('2023-01-03 00:59:59.9990000 +01:00');
+        expect(cast[2][0][0].value).toBe('2023-01-03 00:59:59.9990000+01:00');
 
         stmt = new MssqlPreparedRequest(connection, 'INSERT INTO ted_test_time (time) values (?);', false);
         res = await stmt.execute([TypedBinding.create(PARAM_TIME, '2023-01-02 23:59:59.999')]);
@@ -343,8 +343,8 @@ describe('Mssql Tedious Date Types', () => {
             "SELECT CAST('2023-01-02 23:59:59.999 +00:00' AS datetimeoffset) AS 'date';"
         ).execute();
         expect(res[2][0][0].value).toBe(cast[2][0][0].value);
-        // STRING SHOULD BE '2023-01-02 23:59:59.999 +00:00' ORIGINAL VALUE IS COMPLETLY LOST
-        expect(res[2][0][0].value).toBe('2023-01-03 00:59:59.9990000 +01:00');
+        // STRING SHOULD BE '2023-01-02 23:59:59.999+00:00' ORIGINAL VALUE IS COMPLETLY LOST
+        expect(res[2][0][0].value).toBe('2023-01-03 00:59:59.9990000+01:00');
 
         stmt = new MssqlPreparedRequest(connectionUtc, 'INSERT INTO ted_test_time (time) values (?);', false);
         res = await stmt.execute([TypedBinding.create(PARAM_TIME, '2023-01-02 23:59:59.999')]);
