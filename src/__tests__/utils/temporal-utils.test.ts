@@ -214,10 +214,10 @@ describe('Temporal Utils', () => {
         expect(formatToDateTime(zdt)).toBe('2000-01-01 02:00:00.888');
         expect(formatToSmallDateTime(zdt)).toBe('2000-01-01 02:00:00.000');
         expect(formatToDateTime2(zdt, 7)).toBe('2000-01-01 02:00:00.8889999');
-        expect(formatToDateTimeOffset(zdt, 7)).toBe('2000-01-01 02:00:00.8889999 +00:00');
+        expect(formatToDateTimeOffset(zdt, 7)).toBe('2000-01-01 02:00:00.8889999+00:00');
         expect(formatToTime(zdt, 1)).toBe('02:00:00.8');
         expect(formatToDateTime2(zdt, 1)).toBe('2000-01-01 02:00:00.8');
-        expect(formatToDateTimeOffset(zdt, 1)).toBe('2000-01-01 02:00:00.8 +00:00');
+        expect(formatToDateTimeOffset(zdt, 1)).toBe('2000-01-01 02:00:00.8+00:00');
         expect(formatToTime(zdt, 1)).toBe('02:00:00.8');
     });
 

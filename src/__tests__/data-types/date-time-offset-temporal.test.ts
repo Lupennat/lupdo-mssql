@@ -63,14 +63,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         let res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-09 23:59:59.123456789 -01:00' AS datetimeoffset(7)) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-09 23:59:59.1234568 -01:00');
+        expect(res).toBe('2007-05-09 23:59:59.1234568-01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-09 23:59:59.123456789 -01:00' AS datetimeoffset(7)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-10 00:59:59.1234568 +00:00');
+        expect(res).toBe('2007-05-10 00:59:59.1234568+00:00');
 
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset4 (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATETIMEZONE, '2007-05-09 23:59:59.123456789 -01:00')]);
@@ -80,14 +80,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-09 23:59:59.123456789 -01:00' AS datetimeoffset(4)) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-09 23:59:59.1235 -01:00');
+        expect(res).toBe('2007-05-09 23:59:59.1235-01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset4 WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-09 23:59:59.123456789 -01:00' AS datetimeoffset(4)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-10 00:59:59.1235 +00:00');
+        expect(res).toBe('2007-05-10 00:59:59.1235+00:00');
 
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset2 (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATETIMEZONE, '2007-05-09 23:59:59.123456789 -01:00')]);
@@ -97,14 +97,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-09 23:59:59.123456789 -01:00' AS datetimeoffset(2)) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-09 23:59:59.12 -01:00');
+        expect(res).toBe('2007-05-09 23:59:59.12-01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset2 WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-09 23:59:59.123456789 -01:00' AS datetimeoffset(2)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-10 00:59:59.12 +00:00');
+        expect(res).toBe('2007-05-10 00:59:59.12+00:00');
     });
 
     it('DateTimeOffset As Date Can Not Bypass Local Timezone', async () => {
@@ -119,14 +119,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         let res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-10 23:59:59.123456789 -01:00' AS datetimeoffset(7)) AS 'date';");
         expect(res).not.toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-11 01:59:59.1234568 +01:00');
+        expect(res).toBe('2007-05-11 01:59:59.1234568+01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-10 23:59:59.123456789 -01:00' AS datetimeoffset(7)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-11 00:59:59.1234568 +00:00');
+        expect(res).toBe('2007-05-11 00:59:59.1234568+00:00');
 
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset4 (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATETIMEZONE, date)]);
@@ -136,14 +136,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-10 23:59:59.123456789 -01:00' AS datetimeoffset(4)) AS 'date';");
         expect(res).not.toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-11 01:59:59.1235 +01:00');
+        expect(res).toBe('2007-05-11 01:59:59.1235+01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset4 WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-10 23:59:59.123456789 -01:00' AS datetimeoffset(4)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-11 00:59:59.1235 +00:00');
+        expect(res).toBe('2007-05-11 00:59:59.1235+00:00');
 
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset2 (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATETIMEZONE, date)]);
@@ -153,14 +153,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-10 23:59:59.123456789 -01:00' AS datetimeoffset(2)) AS 'date';");
         expect(res).not.toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-11 01:59:59.12 +01:00');
+        expect(res).toBe('2007-05-11 01:59:59.12+01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset2 WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-10 23:59:59.123456789 -01:00' AS datetimeoffset(2)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-11 00:59:59.12 +00:00');
+        expect(res).toBe('2007-05-11 00:59:59.12+00:00');
     });
 
     it('Works DateTimeOffset Can Have Options Scale', async () => {
@@ -175,14 +175,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         let res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(6)) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-15 23:59:59.123457 -01:00');
+        expect(res).toBe('2007-05-15 23:59:59.123457-01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset6 WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(6)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-16 00:59:59.123457 +00:00');
+        expect(res).toBe('2007-05-16 00:59:59.123457+00:00');
 
         // scale 5
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset5 (date) values (?);');
@@ -195,14 +195,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(5)) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-15 23:59:59.12346 -01:00');
+        expect(res).toBe('2007-05-15 23:59:59.12346-01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset5 WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(5)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-16 00:59:59.12346 +00:00');
+        expect(res).toBe('2007-05-16 00:59:59.12346+00:00');
 
         // scale 4
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset4 (date) values (?);');
@@ -215,14 +215,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(4)) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-15 23:59:59.1235 -01:00');
+        expect(res).toBe('2007-05-15 23:59:59.1235-01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset4 WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(4)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-16 00:59:59.1235 +00:00');
+        expect(res).toBe('2007-05-16 00:59:59.1235+00:00');
 
         // scale 3
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset3 (date) values (?);');
@@ -235,14 +235,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(3)) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-15 23:59:59.123 -01:00');
+        expect(res).toBe('2007-05-15 23:59:59.123-01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset3 WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(3)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-16 00:59:59.123 +00:00');
+        expect(res).toBe('2007-05-16 00:59:59.123+00:00');
 
         // scale 2
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset2 (date) values (?);');
@@ -255,14 +255,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(2)) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-15 23:59:59.12 -01:00');
+        expect(res).toBe('2007-05-15 23:59:59.12-01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset2 WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(2)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-16 00:59:59.12 +00:00');
+        expect(res).toBe('2007-05-16 00:59:59.12+00:00');
 
         // scale 1
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset1 (date) values (?);');
@@ -275,14 +275,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(1)) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-15 23:59:59.1 -01:00');
+        expect(res).toBe('2007-05-15 23:59:59.1-01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset1 WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(1)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-16 00:59:59.1 +00:00');
+        expect(res).toBe('2007-05-16 00:59:59.1+00:00');
 
         // scale 0
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset0 (date) values (?);');
@@ -295,14 +295,14 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(0)) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-15 23:59:59 -01:00');
+        expect(res).toBe('2007-05-15 23:59:59-01:00');
         query = await pdo.query("SELECT date AT TIME ZONE 'UTC' AS date FROM test_datetimeoffset0 WHERE id = " + id);
         res = query.fetchColumn(0).get();
         query = await pdo.query(
             "SELECT CAST('2007-05-15 23:59:59.123456789 -01:00' AS datetimeoffset(0)) AT TIME ZONE 'UTC' AS 'date';"
         );
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-16 00:59:59 +00:00');
+        expect(res).toBe('2007-05-16 00:59:59+00:00');
     });
 
     it('Works DateTimeOffset Scale Different From Database Scale', async () => {
@@ -313,7 +313,7 @@ describe('Mssql DateTimeOffser Temporal', () => {
         const id = await stmt.lastInsertId();
         await stmt.close();
         const query = await pdo.query('SELECT date FROM test_datetimeoffset WHERE id = ' + id);
-        expect(query.fetchColumn(0).get()).toBe('2007-05-16 23:59:59.1000000 -01:00');
+        expect(query.fetchColumn(0).get()).toBe('2007-05-16 23:59:59.1000000-01:00');
     });
 
     it('Works DateTimeOffset Min-Max Timezone', async () => {
@@ -331,7 +331,7 @@ describe('Mssql DateTimeOffser Temporal', () => {
         let res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-16 23:59:59.123456789 +14:00' AS datetimeoffset) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-16 23:59:59.1234568 +14:00');
+        expect(res).toBe('2007-05-16 23:59:59.1234568+14:00');
 
         await stmt.execute([TypedBinding.create(PARAM_DATETIMEZONE, '2007-05-16 23:59:59.123456789 -14:00')]);
         id = await stmt.lastInsertId();
@@ -339,7 +339,7 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-16 23:59:59.123456789 -14:00' AS datetimeoffset) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-16 23:59:59.1234568 -14:00');
+        expect(res).toBe('2007-05-16 23:59:59.1234568-14:00');
 
         await stmt.close();
     });
@@ -355,7 +355,7 @@ describe('Mssql DateTimeOffser Temporal', () => {
         const res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-17 23:59:59.999999999 +00:00' AS datetimeoffset) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-18 00:00:00.0000000 +00:00');
+        expect(res).toBe('2007-05-18 00:00:00.0000000+00:00');
     });
 
     it('Works DateTimeOffset As Incomplete String', async () => {
@@ -367,7 +367,7 @@ describe('Mssql DateTimeOffser Temporal', () => {
         let res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-15' AS datetimeoffset) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-15 00:00:00.0000000 +00:00');
+        expect(res).toBe('2007-05-15 00:00:00.0000000+00:00');
 
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATETIMEZONE, '2007-05-15 22:10')]);
@@ -377,7 +377,7 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('2007-05-15 22:10' AS datetimeoffset) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('2007-05-15 22:10:00.0000000 +00:00');
+        expect(res).toBe('2007-05-15 22:10:00.0000000+00:00');
 
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATETIMEZONE, '22:10')]);
@@ -387,7 +387,7 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('22:10' AS datetimeoffset) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('1900-01-01 22:10:00.0000000 +00:00');
+        expect(res).toBe('1900-01-01 22:10:00.0000000+00:00');
 
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATETIMEZONE, '22:10 -01:00')]);
@@ -397,7 +397,7 @@ describe('Mssql DateTimeOffser Temporal', () => {
         res = query.fetchColumn(0).get();
         query = await pdo.query("SELECT CAST('22:10 -01:00' AS datetimeoffset) AS 'date';");
         expect(res).toBe(query.fetchColumn(0).get());
-        expect(res).toBe('1900-01-01 22:10:00.0000000 -01:00');
+        expect(res).toBe('1900-01-01 22:10:00.0000000-01:00');
 
         stmt = await pdo.prepare('INSERT INTO test_datetimeoffset (date) values (?);');
         await expect(

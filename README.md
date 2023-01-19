@@ -179,6 +179,16 @@ When parameter are bound as primitive Lupdo-mssql try to generate the right colu
 > **Warning**
 > null value will be always typed as NVarChar, but is not compatible with some database column types and sql-server will raise an error. Please prefer Lupdo TypedBinding
 
+## TypedBinding Options
+
+option `{ scale: number }` is available for:
+
+-   PARAM_TIMESTAMP
+-   PARAM_DATETIMEZONE
+-   PARAM_TIME
+
+when scale is provided nanoseconds will be rounded to provided scale even if db column has a larger scale.
+
 ## Mssql Named Parameter
 
 Lupdo-mssql support named parameter with syntax `:name`, the support is guaranteed only if all placeholder have a binding.\
@@ -221,7 +231,7 @@ If you pass sequence name as parameter, it should retrieve current value of sequ
 
 # Tedious Patch
 
-Here you can find a discussion about [Tedious Data Types](#https://github.com/tediousjs/tedious/issues/678).\
+[Here](https://github.com/tediousjs/tedious/issues/678) you can find a discussion about Tedious Data Types.\
 Lupdo-mssql apply a patch to tedious@15.1.2 and @types/tedious@4.0.9 to improve Data Types through the package [patch-package](https://github.com/ds300/patch-package)
 
 ## Decimal and Numeric
@@ -343,7 +353,7 @@ const customParser = {
 
 # Temporal Types
 
-Here you can find a discussion about [Tedious Data Types](#https://github.com/tediousjs/tedious/issues/678).\
+[Here](https://github.com/tediousjs/tedious/issues/678) you can find a discussion about Tedious Data Types.\
 Ludpo-mssql Add new Tedious Types to Manage Date And Time columns:
 
 -   TYPES.DateTemporal
@@ -357,20 +367,39 @@ this new TYPES use an experimental polyfill for javascript [Temporal](https://tc
 
 through these new types, full consistency in the saving and proccessing of dates is ensured, when you bind a date string to a parameter.
 
-```ts
+```sql
 SELECT
-     CAST('2007-05-17 00:00:00.000000000' AS time(7)) AS 'time'
+     CAST('2007-05-17 23:59:59.999999999' AS time(7)) AS 'time'
     ,CAST('2007-05-08 23:59:29.999999999 -14:00' AS date) AS 'date'
     ,CAST('2007-05-13 23:59:29.998' AS smalldatetime) AS
         'smalldatetime'
-    ,CAST('23:10' AS datetime) AS 'datetime'
+    ,CAST('2007-05-13 23:59:29.999' AS datetime) AS 'datetime'
     ,CAST('2007-05-13 23:59:59.998456789 -01:00' AS datetime2(7)) AS
         'datetime2'
-    ,CAST('22:10' AS datetimeoffset(7)) AT TIME ZONE 'UTC'  AS
+    ,CAST('2007-05-13 23:59:59.998456789 -01:00' AS datetimeoffset(7))AS
         'datetimeoffset';
 ```
 
-Output from these query will be always consistent no matter which is your timezone locale, no matter if useUTC is enabled or Not.
+Output from these query will be always consistent no matter which is your timezone locale.\
+The `options.useUTC` does not affect temporal types.\
+
+Valid string Dates are ISO 8601/RFC 3339 string like `2020-01-23T17:04:36.491865121-08:00` or `2020-01-24T01:04Z`.
+
+```txt
+[YYYY-MM-DD][T| ][hh:{mm:ss.sssssssss}][Z|±hh{:mm}]
+```
+
+> **Warning**
+> when string contains microseconds and/or timezone `TYPES.DateTimeTemporal` and `TYPES.SmallDateTimeTemporal` will raise an error.
+
+Output String Date will Be:
+
+-   TYPES.DateTemporal output `YYYY-MM-DD`
+-   TYPES.DateTime2Temporal `YYYY-MM-DD hh:mm:ss.ssssssss`
+-   TYPES.DateTimeOffsetTemporal `YYYY-MM-DD hh:mm:ss.ssssssss+hh:mm`
+-   TYPES.DateTimeTemporal `YYYY-MM-DD hh:mm:ss.sss`
+-   TYPES.SmallDateTimeTemporal `YYYY-MM-DD hh:mm:00.000`
+-   TYPES.TimeTemporal `hh:mm:ss.sssssss`
 
 > **Warning**
 > Using a date with the new Temporal Types, do not guarantee consistence for datetimeoffset type. Use Strings.
