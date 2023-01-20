@@ -35,14 +35,11 @@ Lupdo-mssql, under the hood, uses stable and performant npm packages:
 Base Example
 
 ```js
-const { Pdo } = require('lupdo');
-require('lupdo-mssql');
+const { createMssqlPdo } = require("lupdo-mssql");
 // ES6 or Typescrypt
-import { Pdo } from 'lupdo';
-import 'ludpo-mssql';
+import { createMssqlPdo } from 'ludpo-mssql';
 
-const pdo = new Pdo(
-    'mssql',
+const pdo =createMssqlPdo(
     {
         server: 'localhost',
         options: {
