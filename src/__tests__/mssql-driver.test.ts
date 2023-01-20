@@ -10,6 +10,7 @@ import {
 } from 'lupdo';
 
 import { ColumnValue, Connection, Request } from 'tedious-better-data-types';
+import { createMssqlPdo } from '..';
 import { pdoData } from './fixtures/config';
 import MssqlFakerDriver from './fixtures/mssql-faker-driver';
 
@@ -144,5 +145,11 @@ describe('Mssql Driver', () => {
         const fakedriver = new MssqlFakerDriver('mssqlfaker', { server: 'localhost' }, {}, {});
         fakedriver.fake = 'CONNECT';
         await expect(fakedriver.connect()).rejects.toThrowError('Fake Connection Error');
+    });
+
+    it('Works createMssqlPdo', async () => {
+        const pdo = createMssqlPdo(pdoData.config);
+        expect(pdo).toBeInstanceOf(Pdo);
+        await pdo.disconnect();
     });
 });
