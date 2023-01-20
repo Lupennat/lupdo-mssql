@@ -28,7 +28,7 @@ Lupdo-mssql, under the hood, uses stable and performant npm packages:
 -   [tedious](http://tediousjs.github.io/tedious/)
 
 > **Note**
-> Lupdo-mssql locally [patch tedious](#tedious-patch) to preserve data integrity
+> Lupdo-mssql use [forked tedious-better-data-types](#tedious-fork) to preserve data integrity
 
 ## Usage
 
@@ -229,15 +229,15 @@ If you pass sequence name as parameter, it should retrieve current value of sequ
 > **Note**
 > You can always get insert ID through [`output syntax`](#mssql-output).
 
-# Tedious Patch
+# Tedious Fork
 
 [Here](https://github.com/tediousjs/tedious/issues/678) you can find a discussion about Tedious Data Types.\
-Lupdo-mssql apply a patch to tedious@15.1.2 and @types/tedious@4.0.9 to improve Data Types through the package [patch-package](https://github.com/ds300/patch-package)
+Lupdo-mssql use a forked version [tedious-better-data-types](https://github.com/Lupennat/tedious-better-data-types) 
 
 ## Decimal and Numeric
 
 Tedious by default read Decimal and Numeric bytes from Buffer as `Number`, when data are big decimal or big integer precision and scale are lost.\
-Through the new options `returnDecimalAndNumericAsString` the patch will intercept tedious default parser and will read byte from Buffer as `String` without loosing precision and scale.
+Through the new options `returnDecimalAndNumericAsString` it will read byte from Buffer as `String` without loosing precision and scale.
 
 > **Note**
 > credits to [tedious-decimal](https://github.com/KAMAELUA/tedious-decimal) fork.
@@ -245,12 +245,12 @@ Through the new options `returnDecimalAndNumericAsString` the patch will interce
 ## Money
 
 Tedious by default read Money bytes from Buffer as `Number`, when data are big decimal or big integer precision and scale are lost.\
-Through the new options `returnMoneyAsString` the patch will intercept tedious default parser and will read byte from Buffer as `Number` but it will cast `high` value through `BigInt` and merge low and high value as `String` without loosing precision and scale.
+Through the new options `returnMoneyAsString` it will read byte from Buffer as `Number` but it will cast `high` value through `BigInt` and merge low and high value as `String` without loosing precision and scale.
 
 ## Datetime Object
 
 Tedious by default read Date and Time bytes from Buffer as `Number`, but to generate a real date (sql server do not return a real date) it use javascript `Date`. This cause a lot of problem due to Local System Timezone and it also lost precision due to microseconds and nanoseconds (tedious try to fix it with date.deltaNanoseconds).\
-Through the new options `returnDateTimeAsObject` the patch will intercept tedious default parser and will return db data as a DateObject.
+Through the new options `returnDateTimeAsObject` it will return db data as a DateObject.
 
 ```ts
 interface DateTimeObject {
@@ -296,13 +296,12 @@ if (minutes !== 0) {
 ## Custom Parsers
 
 Tedious by default doesn't Have a Custom Parser. This cause a lot of problem due to Complexity of Variant Type And `TypeN`.\
-Through the new options `customParsers` the patch will intercept tedious default callback, and will apply a custom Callback if type is found on `customParsers`.
+Through the new options `customParsers` it will apply a custom Callback if type is found on `customParsers`.
 First Parameter is The original callback, second parameter is the value decoded from the buffer.\
 Before quit custom function must to call the original callback with the value, otherwise iterator will be stuck forever.
 
 ```ts
-type ParserCallback = (value: any) => void;
-type CustomParserCallback = (parserCallback: ParserCallback, ...value: any[]) => void;
+type CustomParserCallback = (parserCallback: (value: unknown) => void, ...value: any[]) => void;
 
 interface CustomParsers {
     BigInt?: CustomParserCallback;
@@ -337,7 +336,7 @@ Here An Example:
 
 ```ts
 const customParser = {
-    BigInt: function (parserCallback: ParserCallback, value: string | null): void {
+    BigInt: function (parserCallback: (value: unknown) => void, value: string | null): void {
         if (value === null) {
             return parserCallback(null);
         }
@@ -353,8 +352,7 @@ const customParser = {
 
 # Temporal Types
 
-[Here](https://github.com/tediousjs/tedious/issues/678) you can find a discussion about Tedious Data Types.\
-Ludpo-mssql Add new Tedious Types to Manage Date And Time columns:
+[tedious-better-data-types](https://github.com/Lupennat/tedious-better-data-types) add new Types to Manage Date And Time columns:
 
 -   TYPES.DateTemporal
 -   TYPES.DateTime2Temporal
@@ -363,9 +361,9 @@ Ludpo-mssql Add new Tedious Types to Manage Date And Time columns:
 -   TYPES.SmallDateTimeTemporal
 -   TYPES.TimeTemporal
 
-this new TYPES use an experimental polyfill for javascript [Temporal](https://tc39.es/proposal-temporal/docs/index.html) [@js-temporal/polyfill](https://github.com/js-temporal/temporal-polyfill).
+this new TYPES use an experimental [@js-temporal/polyfill](https://github.com/js-temporal/temporal-polyfill) for javascript [Temporal](https://tc39.es/proposal-temporal/docs/index.html).
 
-through these new types, full consistency in the saving and proccessing of dates is ensured, when you bind a date string to a parameter.
+through these new types, full data consistency is ensured, when you bind a date string to a parameter.
 
 ```sql
 SELECT
@@ -381,7 +379,7 @@ SELECT
 ```
 
 Output from these query will be always consistent no matter which is your timezone locale.\
-The `options.useUTC` does not affect temporal types.\
+The `options.useUTC` does not affect temporal types.
 
 Valid string Dates are ISO 8601/RFC 3339 string like `2020-01-23T17:04:36.491865121-08:00` or `2020-01-24T01:04Z`.
 

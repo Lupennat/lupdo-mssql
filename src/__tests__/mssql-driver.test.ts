@@ -9,7 +9,7 @@ import {
     PdoTransaction
 } from 'lupdo';
 
-import { ColumnValue, Connection, Request } from 'tedious';
+import { ColumnValue, Connection, Request } from 'tedious-better-data-types';
 import { pdoData } from './fixtures/config';
 import MssqlFakerDriver from './fixtures/mssql-faker-driver';
 

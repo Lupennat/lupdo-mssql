@@ -1,4 +1,4 @@
-import { ColumnMetaData, ColumnValue, Request } from 'tedious';
+import { ColumnMetaData, ColumnValue, Request } from 'tedious-better-data-types';
 import { MssqlPoolConnection } from './types';
 import { sqlQuestionMarkToNumericAtP } from './utils/bindings';
 
