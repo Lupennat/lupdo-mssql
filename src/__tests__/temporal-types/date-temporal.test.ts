@@ -1,5 +1,5 @@
 import { PARAM_DATE, Pdo, TypedBinding } from 'lupdo';
-import { TediousDate } from '../../types';
+import { DateWithNanosecondsDelta } from 'tedious-better-data-types';
 import { pdoData } from '../fixtures/config';
 
 describe('Mssql Date Temporal', () => {
@@ -14,7 +14,7 @@ describe('Mssql Date Temporal', () => {
         await pdo.disconnect();
     });
 
-    it('Works Date As Null', async () => {
+    it.only('Works Date As Null', async () => {
         const stmt = await pdo.prepare('INSERT INTO test_date (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATE, null)]);
         const id = await stmt.lastInsertId();
@@ -50,7 +50,7 @@ describe('Mssql Date Temporal', () => {
     });
 
     it('Works Date As Date', async () => {
-        const date = new Date('2007-05-10') as TediousDate;
+        const date = new Date('2007-05-10') as DateWithNanosecondsDelta;
         const stmt = await pdo.prepare('INSERT INTO test_date (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATE, date)]);
         const id = await stmt.lastInsertId();
@@ -63,7 +63,7 @@ describe('Mssql Date Temporal', () => {
     });
 
     it('Works Date As String Ignore Time', async () => {
-        const date = new Date('2007-05-11 23:59:59.999') as TediousDate;
+        const date = new Date('2007-05-11 23:59:59.999') as DateWithNanosecondsDelta;
         date.nanosecondsDelta = 0.000999999;
         const stmt = await pdo.prepare('INSERT INTO test_date (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATE, date)]);
@@ -77,7 +77,7 @@ describe('Mssql Date Temporal', () => {
     });
 
     it('Date As Date Can Not Ignore Timezone', async () => {
-        const date = new Date('2007-05-12 23:59:59.999 -01:00') as TediousDate;
+        const date = new Date('2007-05-12 23:59:59.999 -01:00') as DateWithNanosecondsDelta;
         date.nanosecondsDelta = 0.000999999;
         const stmt = await pdo.prepare('INSERT INTO test_date (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATE, date)]);

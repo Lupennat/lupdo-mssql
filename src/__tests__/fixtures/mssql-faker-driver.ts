@@ -1,4 +1,4 @@
-import { Connection, ISOLATION_LEVEL } from 'tedious';
+import { Connection, ISOLATION_LEVEL } from 'tedious-better-data-types';
 import MssqlDriver from '../../mssql-driver';
 import { MssqlOptions, MssqlPoolConnection } from '../../types';
 

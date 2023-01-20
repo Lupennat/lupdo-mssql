@@ -17,8 +17,8 @@ import {
     PARAM_VARBINARY,
     PARAM_VARCHAR
 } from 'lupdo';
-import { TediousType } from 'tedious';
-import { MSSQL_PARAM_SMALLDATETIME } from '../../constants';
+import { DateWithNanosecondsDelta, TediousType } from 'tedious-better-data-types';
+import { MSSQL_PARAM_SMALLDATETIME } from '../constants';
 import {
     castBinding,
     convertBindingsToDictionary,
@@ -28,9 +28,19 @@ import {
     sqlColumnBindingsToAtP,
     sqlQuestionMarkToNumericAtP,
     toBigInt
-} from '../../utils/bindings';
+} from '../utils/bindings';
+import {
+    formatToDate,
+    formatToDateTime,
+    formatToDateTime2,
+    formatToDateTimeOffset,
+    formatToSmallDateTime,
+    formatToTime,
+    offsetToTimezone,
+    temporalZdtFromDateTimeObject
+} from '../utils/temporals';
 
-describe('Utils Bindings', () => {
+describe('Utils Utils', () => {
     it('Works Sql Question Mark To Numeric At P', () => {
         expect(sqlQuestionMarkToNumericAtP('SELECT ?,?,?,?')).toBe('SELECT @p1,@p2,@p3,@p4');
         expect(sqlQuestionMarkToNumericAtP('SELECT \\?')).toBe('SELECT ?');
@@ -172,5 +182,38 @@ describe('Utils Bindings', () => {
         expect(getTediousType(true, false, PARAM_DATE).name).toBe('Date');
         expect(getTediousType(true, true, PARAM_DATE).name).toBe('DateTemporal');
         expect(getTediousType(true, false, 'PARAM_TYPE_NOT_EXISTS').name).toBe('Bit');
+    });
+
+    it('Works Format to Sql Server String', () => {
+        const zdt = temporalZdtFromDateTimeObject({
+            startingYear: 2000,
+            minutes: 120,
+            nanoseconds: 888999900
+        });
+        expect(formatToDate(zdt)).toBe('2000-01-01');
+        expect(formatToDateTime(zdt)).toBe('2000-01-01 02:00:00.888');
+        expect(formatToSmallDateTime(zdt)).toBe('2000-01-01 02:00:00.000');
+        expect(formatToDateTime2(zdt, 7)).toBe('2000-01-01 02:00:00.8889999');
+        expect(formatToDateTimeOffset(zdt, 7)).toBe('2000-01-01 02:00:00.8889999+00:00');
+        expect(formatToTime(zdt, 1)).toBe('02:00:00.8');
+        expect(formatToDateTime2(zdt, 1)).toBe('2000-01-01 02:00:00.8');
+        expect(formatToDateTimeOffset(zdt, 1)).toBe('2000-01-01 02:00:00.8+00:00');
+        expect(formatToTime(zdt, 1)).toBe('02:00:00.8');
+    });
+
+    it('Works Format Time With Base Date', () => {
+        expect(formatToTime(new Date('2023-01-12 23:59:59.999') as DateWithNanosecondsDelta, 7)).toBe(
+            '23:59:59.9990000'
+        );
+    });
+
+    it('Works Date Offset To Timezone', () => {
+        expect(offsetToTimezone(0)).toBe('+00:00');
+        expect(offsetToTimezone(840)).toBe('+14:00');
+        expect(offsetToTimezone(-840)).toBe('-14:00');
+        expect(offsetToTimezone(120)).toBe('+02:00');
+        expect(offsetToTimezone(-15)).toBe('-00:15');
+        expect(offsetToTimezone(732)).toBe('+12:12');
+        expect(offsetToTimezone(-732)).toBe('-12:12');
     });
 });

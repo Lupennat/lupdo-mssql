@@ -3,7 +3,7 @@ import PdoAffectingData from 'lupdo/dist/typings/types/pdo-affecting-data';
 import PdoColumnData from 'lupdo/dist/typings/types/pdo-column-data';
 import { Params, ValidBindingsSingle } from 'lupdo/dist/typings/types/pdo-prepared-statement';
 import PdoRowData from 'lupdo/dist/typings/types/pdo-raw-data';
-import { ColumnMetaData, ColumnValue } from 'tedious';
+import { ColumnMetaData, ColumnValue } from 'tedious-better-data-types';
 import { MSSQL_DATE_BINDING, MSSQL_DATE_BINDING_TEMPORAL } from './constants';
 import MssqlPreparedRequest from './mssql-prepared-request';
 import MssqlRequest from './mssql-request';

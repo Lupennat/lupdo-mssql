@@ -1,5 +1,5 @@
 import { PARAM_DATETIMEZONE, Pdo, TypedBinding } from 'lupdo';
-import { TediousDate } from '../../types';
+import { DateWithNanosecondsDelta } from 'tedious-better-data-types';
 import { pdoData } from '../fixtures/config';
 
 describe('Mssql DateTimeOffser Temporal', () => {
@@ -108,7 +108,7 @@ describe('Mssql DateTimeOffser Temporal', () => {
     });
 
     it('DateTimeOffset As Date Can Not Bypass Local Timezone', async () => {
-        const date = new Date('2007-05-10 23:59:59.123 -01:00') as TediousDate;
+        const date = new Date('2007-05-10 23:59:59.123 -01:00') as DateWithNanosecondsDelta;
         date.nanosecondsDelta = 0.000456789;
 
         let stmt = await pdo.prepare('INSERT INTO test_datetimeoffset (date) values (?);');

@@ -1,7 +1,7 @@
 import { TypedBinding } from 'lupdo';
 import { TypeBindingOptions } from 'lupdo/dist/typings/typed-binding';
 import { Params, ValidBindingsPrimitive, ValidBindingsSingle } from 'lupdo/dist/typings/types/pdo-prepared-statement';
-import { ColumnMetaData, ColumnValue, ParameterOptions, Request, TediousType } from 'tedious';
+import { ColumnMetaData, ColumnValue, ParameterOptions, Request, TediousType } from 'tedious-better-data-types';
 import MssqlRequest from './mssql-request';
 import { MssqlPoolConnection } from './types';
 import { castBinding, convertBindingsToDictionary, getTediousType } from './utils/bindings';

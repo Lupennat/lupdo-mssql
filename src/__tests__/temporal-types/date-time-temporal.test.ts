@@ -1,5 +1,5 @@
 import { PARAM_DATETIME, Pdo, TypedBinding } from 'lupdo';
-import { TediousDate } from '../../types';
+import { DateWithNanosecondsDelta } from 'tedious-better-data-types';
 import { pdoData } from '../fixtures/config';
 
 describe('Mssql DateTime Temporal', () => {
@@ -208,10 +208,10 @@ describe('Mssql DateTime Temporal', () => {
 
     it('Works DateTime As Date Error For Time', async () => {
         const stmt = await pdo.prepare('INSERT INTO test_datetime (date) values (?);');
-        let date = new Date('2007-05-12 23:59:59.999 -01:00') as TediousDate;
+        let date = new Date('2007-05-12 23:59:59.999 -01:00') as DateWithNanosecondsDelta;
         date.nanosecondsDelta = 0.000999999;
         await expect(stmt.execute([TypedBinding.create(PARAM_DATETIME, date)])).rejects.toThrowError();
-        date = new Date('2007-05-12 23:59:59.999 -01:00') as TediousDate;
+        date = new Date('2007-05-12 23:59:59.999 -01:00') as DateWithNanosecondsDelta;
         date.nanosecondsDelta = 0.0009;
         await expect(stmt.execute([TypedBinding.create(PARAM_DATETIME, date)])).rejects.toThrowError();
 
@@ -219,7 +219,7 @@ describe('Mssql DateTime Temporal', () => {
     });
 
     it('DateTime As Date Can Not Ignore Timezone', async () => {
-        const date = new Date('2007-05-13 23:59:59.998 -01:00') as TediousDate;
+        const date = new Date('2007-05-13 23:59:59.998 -01:00') as DateWithNanosecondsDelta;
         date.nanosecondsDelta = 0.0;
 
         const stmt = await pdo.prepare('INSERT INTO test_datetime (date) values (?);');

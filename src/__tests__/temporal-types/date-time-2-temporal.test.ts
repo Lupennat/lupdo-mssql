@@ -1,5 +1,6 @@
 import { PARAM_TIMESTAMP, Pdo, TypedBinding } from 'lupdo';
-import { TediousDate } from '../../types';
+
+import { DateWithNanosecondsDelta } from 'tedious-better-data-types';
 import { pdoData } from '../fixtures/config';
 
 describe('Mssql DateTime2 Temporal', () => {
@@ -87,7 +88,7 @@ describe('Mssql DateTime2 Temporal', () => {
     });
 
     it('Works DateTime2 As Date', async () => {
-        const date = new Date('2007-05-10 23:59:59.123') as TediousDate;
+        const date = new Date('2007-05-10 23:59:59.123') as DateWithNanosecondsDelta;
         date.nanosecondsDelta = 0.000456789;
 
         let stmt = await pdo.prepare('INSERT INTO test_datetime2 (date) values (?);');
@@ -134,7 +135,7 @@ describe('Mssql DateTime2 Temporal', () => {
     });
 
     it('DateTime2 As Date Can Not Ignore Timezone', async () => {
-        const date = new Date('2007-05-13 23:59:59.998 -01:00') as TediousDate;
+        const date = new Date('2007-05-13 23:59:59.998 -01:00') as DateWithNanosecondsDelta;
         date.nanosecondsDelta = 0.000456789;
 
         const stmt = await pdo.prepare('INSERT INTO test_datetime2 (date) values (?);');

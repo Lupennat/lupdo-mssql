@@ -2,7 +2,7 @@ import mssqlParser from '../mssql-parser';
 
 describe('Parser', () => {
     it('Works Parser With Nullable', () => {
-        function callback(value: null): void {
+        function callback(value: unknown): void {
             expect(value).toBeNull();
         }
         mssqlParser.BigInt(callback, null);

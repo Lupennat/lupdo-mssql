@@ -1,8 +1,7 @@
-import { Connection } from 'tedious';
-
 import { ATTR_DEBUG, DEBUG_ENABLED, PdoConnectionI, PdoDriver, PdoRawConnectionI } from 'lupdo';
 import PdoAttributes from 'lupdo/dist/typings/types/pdo-attributes';
 import { PoolOptions } from 'lupdo/dist/typings/types/pdo-pool';
+import { Connection } from 'tedious-better-data-types';
 import { MSSQL_DATE_BINDING, MSSQL_DATE_BINDING_TEMPORAL } from './constants';
 import MssqlConnection from './mssql-connection';
 import mssqlParser from './mssql-parser';

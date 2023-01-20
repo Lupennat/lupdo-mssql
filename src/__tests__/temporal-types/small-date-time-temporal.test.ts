@@ -1,6 +1,7 @@
 import { Pdo, TypedBinding } from 'lupdo';
 import { MSSQL_PARAM_SMALLDATETIME } from '../../constants';
-import { TediousDate } from '../../types';
+
+import { DateWithNanosecondsDelta } from 'tedious-better-data-types';
 import { pdoData } from '../fixtures/config';
 
 describe('Mssql SmallDateTime Temporal', () => {
@@ -146,10 +147,10 @@ describe('Mssql SmallDateTime Temporal', () => {
 
     it('Works SmallDateTime As Date Error For Time', async () => {
         const stmt = await pdo.prepare('INSERT INTO test_smalldatetime (date) values (?);');
-        let date = new Date('2007-05-12 23:59:59.999 -01:00') as TediousDate;
+        let date = new Date('2007-05-12 23:59:59.999 -01:00') as DateWithNanosecondsDelta;
         date.nanosecondsDelta = 0.000999999;
         await expect(stmt.execute([TypedBinding.create(MSSQL_PARAM_SMALLDATETIME, date)])).rejects.toThrowError();
-        date = new Date('2007-05-12 23:59:59.999 -01:00') as TediousDate;
+        date = new Date('2007-05-12 23:59:59.999 -01:00') as DateWithNanosecondsDelta;
         date.nanosecondsDelta = 0.0009;
         await expect(stmt.execute([TypedBinding.create(MSSQL_PARAM_SMALLDATETIME, date)])).rejects.toThrowError();
 
@@ -157,7 +158,7 @@ describe('Mssql SmallDateTime Temporal', () => {
     });
 
     it('DateTime As Date Can Not Ignore Timezone', async () => {
-        const date = new Date('2007-05-13 23:59:29.998 -01:00') as TediousDate;
+        const date = new Date('2007-05-13 23:59:29.998 -01:00') as DateWithNanosecondsDelta;
         date.nanosecondsDelta = 0.0;
 
         const stmt = await pdo.prepare('INSERT INTO test_smalldatetime (date) values (?);');

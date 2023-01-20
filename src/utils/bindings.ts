@@ -18,7 +18,7 @@ import {
     PARAM_VARCHAR
 } from 'lupdo';
 import { ObjectParams, Params, ValidBindingsPrimitive } from 'lupdo/dist/typings/types/pdo-prepared-statement';
-import { TYPES, TediousType } from 'tedious';
+import { TYPES, TediousType } from 'tedious-better-data-types';
 import { MSSQL_PARAM_SMALLDATETIME } from '../constants';
 
 const MATCH_QUOTED = /('[^'\\]*(\\.[^'\\]*)*')/;

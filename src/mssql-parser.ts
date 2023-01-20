@@ -1,7 +1,6 @@
-import { DateTimeObject, ParserCallback } from 'tedious';
+import { DateTimeObject, DateWithNanosecondsDelta } from 'tedious-better-data-types';
 import { toBigInt } from './utils/bindings';
 
-import { TediousDate } from './types';
 import {
     formatToDate,
     formatToDateTime,
@@ -13,57 +12,70 @@ import {
 } from './utils/temporals';
 
 export default {
-    BigInt: function (parserCallback: ParserCallback, value: string | null): void {
+    BigInt: function (parserCallback: (value: unknown) => void, value: string | null): void {
         if (value === null) {
             return parserCallback(null);
         }
         parserCallback(toBigInt(value));
     },
-    Bit: function (parserCallback: ParserCallback, value: boolean | null): void {
+    Bit: function (parserCallback: (value: unknown) => void, value: boolean | null): void {
         if (value === null) {
             return parserCallback(null);
         }
         parserCallback(Number(value));
     },
-    Float: function (parserCallback: ParserCallback, value: string | null): void {
+    Float: function (parserCallback: (value: unknown) => void, value: string | null): void {
         if (value === null) {
             return parserCallback(null);
         }
         parserCallback(value.toString());
     },
-    Real: function (parserCallback: ParserCallback, value: string | null): void {
+    Real: function (parserCallback: (value: unknown) => void, value: string | null): void {
         if (value === null) {
             return parserCallback(null);
         }
         parserCallback(value.toString());
     },
-    SmallDateTime: function (parserCallback: ParserCallback, value: DateTimeObject | TediousDate | null): void {
+    SmallDateTime: function (
+        parserCallback: (value: unknown) => void,
+        value: DateTimeObject | DateWithNanosecondsDelta | null
+    ): void {
         if (value === null) {
             return parserCallback(null);
         }
         parserCallback(formatToSmallDateTime(value instanceof Date ? value : temporalZdtFromDateTimeObject(value)));
     },
-    DateTime: function (parserCallback: ParserCallback, value: DateTimeObject | TediousDate | null): void {
+    DateTime: function (
+        parserCallback: (value: unknown) => void,
+        value: DateTimeObject | DateWithNanosecondsDelta | null
+    ): void {
         if (value === null) {
             return parserCallback(null);
         }
         parserCallback(formatToDateTime(value instanceof Date ? value : temporalZdtFromDateTimeObject(value)));
     },
-    Time: function (parserCallback: ParserCallback, value: DateTimeObject | TediousDate | null, scale: number): void {
+    Time: function (
+        parserCallback: (value: unknown) => void,
+        value: DateTimeObject | DateWithNanosecondsDelta | null,
+        scale: number
+    ): void {
         if (value === null) {
             return parserCallback(null);
         }
         parserCallback(formatToTime(value instanceof Date ? value : temporalZdtFromDateTimeObject(value), scale));
     },
-    Date: function (parserCallback: ParserCallback, value: DateTimeObject | TediousDate | null): void {
+    Date: function (
+        parserCallback: (value: unknown) => void,
+        value: DateTimeObject | DateWithNanosecondsDelta | null
+    ): void {
         if (value === null) {
             return parserCallback(null);
         }
         parserCallback(formatToDate(value instanceof Date ? value : temporalZdtFromDateTimeObject(value)));
     },
     DateTime2: function (
-        parserCallback: ParserCallback,
-        value: DateTimeObject | TediousDate | null,
+        parserCallback: (value: unknown) => void,
+        value: DateTimeObject | DateWithNanosecondsDelta | null,
         scale: number
     ): void {
         if (value === null) {
@@ -72,8 +84,8 @@ export default {
         parserCallback(formatToDateTime2(value instanceof Date ? value : temporalZdtFromDateTimeObject(value), scale));
     },
     DateTimeOffset: function (
-        parserCallback: ParserCallback,
-        value: DateTimeObject | TediousDate | null,
+        parserCallback: (value: unknown) => void,
+        value: DateTimeObject | DateWithNanosecondsDelta | null,
         scale: number
     ): void {
         if (value === null) {
