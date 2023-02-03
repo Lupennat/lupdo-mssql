@@ -1,7 +1,7 @@
 import { ATTR_DEBUG, DEBUG_ENABLED, PdoConnectionI, PdoDriver, PdoRawConnectionI } from 'lupdo';
 import PdoAttributes from 'lupdo/dist/typings/types/pdo-attributes';
 import { PoolOptions } from 'lupdo/dist/typings/types/pdo-pool';
-import { Connection } from 'tedious-better-data-types';
+import { Connection, ConnectionConfig } from 'tedious-better-data-types';
 import { MSSQL_DATE_BINDING, MSSQL_DATE_BINDING_TEMPORAL } from './constants';
 import MssqlConnection from './mssql-connection';
 import mssqlParser from './mssql-parser';
@@ -45,11 +45,11 @@ class MssqlDriver extends PdoDriver {
     }
 
     protected generateTediousOptions(tediousOptions: MssqlOptions, unsecure: boolean, debugMode: number): MssqlOptions {
-        if (!unsecure) {
-            if (tediousOptions.options == null) {
-                tediousOptions.options = {};
-            }
+        if (tediousOptions.options == null) {
+            tediousOptions.options = {};
+        }
 
+        if (!unsecure) {
             if (debugMode === DEBUG_ENABLED) {
                 tediousOptions.options.debug = {
                     packet: true,
@@ -81,11 +81,18 @@ class MssqlDriver extends PdoDriver {
             tediousOptions.options.returnDateTimeAsObject = true;
             tediousOptions.options.customParsers = mssqlParser;
         }
+
+        if (Array.isArray(tediousOptions.server)) {
+            const exploded = tediousOptions.server[Math.floor(Math.random() * tediousOptions.server.length)].split(':');
+            tediousOptions.options.port = Number(exploded.pop() as string);
+            tediousOptions.server = exploded.join(':');
+        }
+
         return tediousOptions;
     }
 
     protected generateTediousConnection(tediousOptions: MssqlOptions): MssqlPoolConnection {
-        const connection = new Connection(tediousOptions) as MssqlPoolConnection;
+        const connection = new Connection(tediousOptions as ConnectionConfig) as MssqlPoolConnection;
         connection.__lupdo_sql_server_connected = false;
 
         return connection;

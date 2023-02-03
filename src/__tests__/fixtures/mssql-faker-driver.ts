@@ -1,4 +1,4 @@
-import { Connection, ISOLATION_LEVEL } from 'tedious-better-data-types';
+import { Connection, ConnectionConfig, ISOLATION_LEVEL } from 'tedious-better-data-types';
 import MssqlDriver from '../../mssql-driver';
 import { MssqlOptions, MssqlPoolConnection } from '../../types';
 
@@ -49,7 +49,7 @@ class MssqlFakerDriver extends MssqlDriver {
     protected connections: FakeConnection[] = [];
     protected faker = '';
     protected generateTediousConnection(tediousOptions: MssqlOptions): MssqlPoolConnection {
-        const conn = new FakeConnection(tediousOptions);
+        const conn = new FakeConnection(tediousOptions as ConnectionConfig);
         conn.fake = this.faker;
         this.connections.push(conn);
         return conn;

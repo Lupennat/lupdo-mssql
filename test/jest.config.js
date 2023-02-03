@@ -9,6 +9,7 @@ module.exports = {
     moduleFileExtensions: ['ts', 'tsx', 'js'],
     setupFilesAfterEnv: ['<rootDir>/test/jest.setup.ts'],
     testEnvironment: 'node',
+    testSequencer: '<rootDir>/test/sequencer.js',
     transform: {
         '^.+\\.tsx?$': ['ts-jest', { tsconfig: 'src/__tests__/tsconfig.json' }]
     }

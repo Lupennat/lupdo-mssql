@@ -78,6 +78,9 @@ Lupdo-mssql [patch](#tedious-patch) for tedious expose 4 new options:
 -   `returnDateTimeAsObject?: boolean` If true, Dates and Times will be serialized as [object](#datetime-object). (default: false)
 -   `returnMoneyAsString?: boolean` If true, Money and SmallMoney will be serialized as [string](#money). (default: false)
 
+> **Note**
+> The `server` option also accepts a list of `host:port` the pool will generate the connection using a random host from the list.
+
 ## Tedious Overrides
 
 By default Ludpo-mssql overrides user connection options with this:
