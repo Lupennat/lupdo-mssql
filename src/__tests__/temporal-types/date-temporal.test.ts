@@ -14,7 +14,7 @@ describe('Mssql Date Temporal', () => {
         await pdo.disconnect();
     });
 
-    it.only('Works Date As Null', async () => {
+    it('Works Date As Null', async () => {
         const stmt = await pdo.prepare('INSERT INTO test_date (date) values (?);');
         await stmt.execute([TypedBinding.create(PARAM_DATE, null)]);
         const id = await stmt.lastInsertId();

@@ -7,7 +7,13 @@ export interface MssqlConnectionOptions extends ConnectionOptions {
     useDateTemporal?: boolean;
 }
 
-export interface MssqlOptions extends ConnectionConfig {
+export interface MssqlOptions extends Omit<ConnectionConfig, 'server'> {
+    /**
+     * Hostname to connect to.
+     * It Accept a list of Hosts of type host:port for random connection
+     */
+    server?: string | string[] | undefined;
+
     /**
      * Further options
      */
