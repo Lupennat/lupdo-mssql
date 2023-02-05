@@ -1,6 +1,6 @@
-import { Connection, ConnectionConfig, ISOLATION_LEVEL } from 'tedious-better-data-types';
+import { Connection, ConnectionConfig } from 'tedious-better-data-types';
 import MssqlDriver from '../../mssql-driver';
-import { MssqlOptions, MssqlPoolConnection } from '../../types';
+import { MssqlIsolationLevel, MssqlOptions, MssqlPoolConnection } from '../../types';
 
 class FakeConnection extends Connection {
     __lupdo_uuid = '';
@@ -20,7 +20,11 @@ class FakeConnection extends Connection {
         }
     }
 
-    public beginTransaction(callback: (error?: Error) => void, name?: string, isolationLevel?: ISOLATION_LEVEL): void {
+    public beginTransaction(
+        callback: (error?: Error) => void,
+        name?: string,
+        isolationLevel?: MssqlIsolationLevel
+    ): void {
         if (this.fake === 'BEGIN') {
             callback(new Error('Fake Transaction Error'));
         } else {
