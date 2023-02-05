@@ -1,4 +1,6 @@
-import { Connection, ConnectionConfig, ConnectionOptions } from 'tedious-better-data-types';
+import { Connection, ConnectionConfig, ConnectionOptions, ISOLATION_LEVEL } from 'tedious-better-data-types';
+
+export type MssqlIsolationLevel = ISOLATION_LEVEL;
 
 export interface MssqlConnectionOptions extends ConnectionOptions {
     /**
