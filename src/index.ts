@@ -11,5 +11,6 @@ export function createMssqlPdo(options: MssqlOptions, poolOptions?: PoolOptions,
     return new Pdo('mssql', options, poolOptions, attributes);
 }
 
+export * from './constants';
 export { default as MssqlDriver } from './mssql-driver';
 export * from './types';
