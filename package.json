@@ -1,6 +1,6 @@
 {
     "name": "lupdo-mssql",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "description": "Sql Server Driver For Lupdo",
     "author": "Claudio Pennati <claudio.pennati@gmail.com>",
     "license": "MIT",
