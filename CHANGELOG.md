@@ -5,6 +5,16 @@ All notable changes to this project from 1.0.0 forward will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.3] - 2023-03-14
+
+### Fixed
+
+-   String parse to identify `?`
+
+### Added
+
+-   String parse convert `??` to `?`
+
 ## [2.1.2] - 2023-02-25
 
 ### Added
