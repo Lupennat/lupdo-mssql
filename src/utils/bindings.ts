@@ -24,19 +24,7 @@ import { MSSQL_PARAM_SMALLDATETIME } from '../constants';
 const MATCH_QUOTED = /('[^'\\]*(\\.[^'\\]*)*')/;
 const MATCH_DOUBLE_QUOTED = /("[^"\\]*(\\.[^"\\]*)*")/;
 
-export function sqlQuestionMarkToNumericAtP(sql: string): string {
-    let questionCount = 0;
-    return sql.replace(/\\?\?/g, match => {
-        if (match === '\\?') {
-            return '?';
-        }
-
-        questionCount += 1;
-        return `@p${questionCount}`;
-    });
-}
-
-export function sqlColumnBindingsToAtP(sql: string, bindings: ObjectParams): string {
+function parseSqlStringAndDoReplace(sql: string, callback: (part: string) => string): string {
     return (
         sql
             // remove -- comments
@@ -54,15 +42,7 @@ export function sqlColumnBindingsToAtP(sql: string, bindings: ObjectParams): str
                             if (!part || MATCH_DOUBLE_QUOTED.test(part)) {
                                 return part;
                             } else {
-                                return part.replace(/(::?)([a-zA-Z0-9_]+)/g, (_, prefix, key) => {
-                                    if (prefix !== ':') {
-                                        return prefix + key;
-                                    } else if (key in bindings) {
-                                        return '@' + key;
-                                    }
-
-                                    return prefix + key;
-                                });
+                                return callback(part);
                             }
                         })
                         .join('');
@@ -71,6 +51,33 @@ export function sqlColumnBindingsToAtP(sql: string, bindings: ObjectParams): str
             .join('')
             .trim()
     );
+}
+
+export function sqlQuestionMarkToNumericAtP(sql: string): string {
+    let questionCount = 0;
+    return parseSqlStringAndDoReplace(sql, part => {
+        return part.replace(/\?(\?)?/g, match => {
+            if (match === '??') {
+                return '?';
+            }
+            questionCount += 1;
+            return `@p${questionCount}`;
+        });
+    });
+}
+
+export function sqlColumnBindingsToAtP(sql: string, bindings: ObjectParams): string {
+    return parseSqlStringAndDoReplace(sql, part => {
+        return part.replace(/(::?)([a-zA-Z0-9_]+)/g, (_, prefix, key) => {
+            if (prefix !== ':') {
+                return prefix + key;
+            } else if (key in bindings) {
+                return '@' + key;
+            }
+
+            return prefix + key;
+        });
+    });
 }
 
 export function convertBindingsToDictionary(bindings: Params): ObjectParams {

@@ -43,12 +43,26 @@ import {
 describe('Utils Utils', () => {
     it('Works Sql Question Mark To Numeric At P', () => {
         expect(sqlQuestionMarkToNumericAtP('SELECT ?,?,?,?')).toBe('SELECT @p1,@p2,@p3,@p4');
-        expect(sqlQuestionMarkToNumericAtP('SELECT \\?')).toBe('SELECT ?');
+        expect(sqlQuestionMarkToNumericAtP('SELECT "?,?,?,?"')).toBe('SELECT "?,?,?,?"');
+        expect(sqlQuestionMarkToNumericAtP('SELECT ??')).toBe('SELECT ?');
+        expect(sqlQuestionMarkToNumericAtP('SELECT "??"')).toBe('SELECT "??"');
+        expect(sqlQuestionMarkToNumericAtP("SELECT '??'")).toBe("SELECT '??'");
+        expect(
+            sqlQuestionMarkToNumericAtP(`-- SELECT '??'
+        select ?`)
+        ).toBe('select @p1');
+        expect(sqlQuestionMarkToNumericAtP("/*SELECT '??' */ SELECT ?")).toBe('SELECT @p1');
+        expect(sqlQuestionMarkToNumericAtP(`select * where t = 'string ?? ? " ? " '' ? ? '`)).toBe(
+            `select * where t = 'string ?? ? " ? " '' ? ? '`
+        );
     });
 
     it('Works Sql Column Bindings To At P', () => {
         expect(sqlColumnBindingsToAtP('SELECT :li,:limit,:test', { li: 1, limit: 2, test: 3 })).toBe(
             'SELECT @li,@limit,@test'
+        );
+        expect(sqlColumnBindingsToAtP('SELECT ":li,:limit,:test"', { li: 1, limit: 2, test: 3 })).toBe(
+            'SELECT ":li,:limit,:test"'
         );
         expect(sqlColumnBindingsToAtP('SELECT :li,:limit, ":test"', { li: 1, limit: 2 })).toBe(
             'SELECT @li,@limit, ":test"'

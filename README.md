@@ -35,11 +35,11 @@ Lupdo-mssql, under the hood, uses stable and performant npm packages:
 Base Example
 
 ```js
-const { createMssqlPdo } = require("lupdo-mssql");
+const { createMssqlPdo } = require('lupdo-mssql');
 // ES6 or Typescrypt
 import { createMssqlPdo } from 'ludpo-mssql';
 
-const pdo =createMssqlPdo(
+const pdo = createMssqlPdo(
     {
         server: 'localhost',
         options: {
@@ -196,7 +196,7 @@ Native `@param` syntax is supported.
 
 ## Mssql Numeric Parameter
 
-Lupdo-mssql support numeric parameter with syntax `?`.
+Lupdo-mssql support numeric parameter with syntax `?`, you can escape it using syntax `??`.
 
 ## Kill Connection
 
@@ -232,7 +232,7 @@ If you pass sequence name as parameter, it should retrieve current value of sequ
 # Tedious Fork
 
 [Here](https://github.com/tediousjs/tedious/issues/678) you can find a discussion about Tedious Data Types.\
-Lupdo-mssql use a forked version [tedious-better-data-types](https://github.com/Lupennat/tedious-better-data-types) 
+Lupdo-mssql use a forked version [tedious-better-data-types](https://github.com/Lupennat/tedious-better-data-types)
 
 ## Decimal and Numeric
 
