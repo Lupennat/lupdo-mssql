@@ -1,4 +1,4 @@
-import { Connection, ConnectionConfig, ConnectionOptions, ISOLATION_LEVEL } from 'tedious-better-data-types';
+import { Connection, ConnectionConfig, ConnectionOptions, ISOLATION_LEVEL, Request } from 'tedious-better-data-types';
 
 export type MssqlIsolationLevel = ISOLATION_LEVEL;
 
@@ -27,4 +27,8 @@ export interface MssqlPoolConnection extends Connection {
     __lupdo_killed: boolean;
     __lupdo_sql_server_connected: boolean;
     __lupdo_sql_server_before: undefined | string[];
+    __lupdo_sql_server_queue?: Request[];
+    state?: {
+        name: string;
+    };
 }

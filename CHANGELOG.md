@@ -5,15 +5,23 @@ All notable changes to this project from 1.0.0 forward will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.4] - 2023-03-20
+
+### Fixed
+
+"Requests can only be made in the LoggedIn state, not the SentClientRequest state"
+Only one query can be executed on a connection at a time. You need to wait until the request callback is executed, either with an error or with the result before making another request.
+(Refer to the [TDS protocol state diagram](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-tds/ce1cef02-f43c-4e37-a190-aaa444b96360) [bottom-half of the diagram] for a high level understanding of the TDS lifecycle).
+
 ## [2.1.3] - 2023-03-14
 
 ### Fixed
 
--   String parse to identify `?`
+-   String parser fixed `?` matching
 
 ### Added
 
--   String parse convert `??` to `?`
+-   String parser convert `??` to `?`
 
 ## [2.1.2] - 2023-02-25
 

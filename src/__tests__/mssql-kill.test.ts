@@ -1,7 +1,7 @@
 import { Pdo } from 'lupdo';
 import { pdoData } from './fixtures/config';
 
-describe('Mssql Cast', () => {
+describe('Mssql Kill', () => {
     it('Works Destroy Connection Does Kill Connection', async () => {
         const events: {
             killed: {
