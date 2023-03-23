@@ -142,6 +142,21 @@ describe('Mssql Driver', () => {
         await pdo.disconnect();
     });
 
+    it('Work Get Version', async () => {
+        const pdo = createMssqlPdo(pdoData.config);
+        expect((await pdo.getVersion()).startsWith('Microsoft SQL Server')).toBeTruthy();
+    });
+
+    it('Works Pdo Connection Version', async () => {
+        const pdo = createMssqlPdo(pdoData.config, {
+            created: (uuid, connection) => {
+                expect(connection.version.startsWith('Microsoft SQL Server')).toBeTruthy();
+            }
+        });
+        await pdo.query('SELECT 1');
+        await pdo.disconnect();
+    });
+
     it('Works Debug', async () => {
         console.log = jest.fn();
         console.trace = jest.fn();

@@ -1,6 +1,6 @@
 {
     "name": "lupdo-mssql",
-    "version": "2.1.4",
+    "version": "2.2.0",
     "description": "Sql Server Driver For Lupdo",
     "author": "Claudio Pennati <claudio.pennati@gmail.com>",
     "license": "MIT",
@@ -73,7 +73,7 @@
     },
     "dependencies": {
         "@js-temporal/polyfill": "0.4.3",
-        "lupdo": "^3.1.2",
+        "lupdo": "^3.3.0",
         "tedious-better-data-types": "^16.1.2",
         "tslib": "^2.4.1"
     }

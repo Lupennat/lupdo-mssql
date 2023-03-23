@@ -6,6 +6,7 @@ import { MSSQL_DATE_BINDING, MSSQL_DATE_BINDING_TEMPORAL } from './constants';
 import MssqlConnection from './mssql-connection';
 import mssqlParser from './mssql-parser';
 import MssqlRawConnection from './mssql-raw-connection';
+import MssqlRequest from './mssql-request';
 import { MssqlOptions, MssqlPoolConnection } from './types';
 
 class MssqlDriver extends PdoDriver {
@@ -140,6 +141,12 @@ class MssqlDriver extends PdoDriver {
 
     public getRawConnection(): PdoRawConnectionI {
         return new MssqlRawConnection(this.pool);
+    }
+
+    protected async getVersionFromConnection(connection: MssqlPoolConnection): Promise<string> {
+        const request = new MssqlRequest(connection, 'SELECT @@version as version');
+        const res = await request.execute();
+        return res[2][0][0].value.split('\n')[0];
     }
 }
 
