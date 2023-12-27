@@ -12,9 +12,10 @@ import {
 
 class MssqlRequest {
     static requestQueue: { request: Request; connection: MssqlPoolConnection }[] = [];
-    protected columns: ColumnMetaData[] = [];
+    protected columns: ColumnMetaData[][] = [];
     protected rowCount = 0;
-    protected rows: ColumnValue[][] = [];
+    protected cursor = -1;
+    protected rows: ColumnValue[][][] = [];
     public sql = '';
 
     constructor(protected connection: MssqlPoolConnection, sql: string, protected useTemporalDate: boolean = false) {
@@ -27,7 +28,7 @@ class MssqlRequest {
     }
 
     protected generateRequest(
-        callback: (error: Error | undefined, response?: [ColumnMetaData[], number, ColumnValue[][]]) => void
+        callback: (error: Error | undefined, response?: [ColumnMetaData[][], number, ColumnValue[][][]]) => void
     ): Request {
         const request = new Request(this.sql, (err: Error | undefined, count: number) => {
             if (err != null) {
@@ -37,7 +38,9 @@ class MssqlRequest {
         });
 
         request.on('columnMetadata', (columnsMetaData: ColumnMetaData[]) => {
-            this.columns = columnsMetaData;
+            this.cursor++;
+            this.rows[this.cursor] = [];
+            this.columns.push(columnsMetaData);
         });
 
         request.on('requestCompleted', () => {
@@ -65,7 +68,7 @@ class MssqlRequest {
         this.consumeRequest();
     }
 
-    protected convertRequestToPromise(bindings?: Params): Promise<[ColumnMetaData[], number, ColumnValue[][]]> {
+    protected convertRequestToPromise(bindings?: Params): Promise<[ColumnMetaData[][], number, ColumnValue[][][]]> {
         return new Promise((resolve, reject) => {
             const request = this.generateRequest((err: Error | undefined) => {
                 if (err) {
@@ -78,7 +81,7 @@ class MssqlRequest {
             });
 
             request.on('row', (row: ColumnValue[]) => {
-                this.rows.push(row);
+                this.rows[this.cursor].push(row);
             });
 
             if (bindings) {
@@ -105,7 +108,7 @@ class MssqlRequest {
         return [tediousType, value, options];
     }
 
-    public async execute(): Promise<[ColumnMetaData[], number, ColumnValue[][]]> {
+    public async execute(): Promise<[ColumnMetaData[][], number, ColumnValue[][][]]> {
         return await this.convertRequestToPromise();
     }
 }

@@ -119,4 +119,42 @@ describe('Mssql Statement', () => {
         stmt.resetCursor();
         expect(fetch.get()).toEqual([5, 'Sincere', 'Demi-girl']);
     });
+
+    it('Works Multirow Statement', async () => {
+        await pdo.exec(`IF OBJECT_ID('MultisetProcedure', 'P') IS NOT NULL
+        BEGIN
+            DROP PROCEDURE MultisetProcedure;
+        END;`);
+
+        await pdo.exec(`CREATE PROCEDURE MultisetProcedure
+        AS
+        BEGIN
+            SELECT TOP 2 * FROM companies;
+
+            SELECT TOP 2 * FROM users;
+        END;`);
+
+        const stmt = await pdo.prepare('EXEC MultisetProcedure');
+        await stmt.execute();
+
+        let i = 0;
+        do {
+            expect(stmt.fetchArray().all()).toEqual(
+                i === 0
+                    ? [
+                          [1, 'Satterfield Inc', '2022-10-22 00:00:00.000', 1, null],
+                          [2, 'Grimes - Reinger', '2022-11-22 00:00:00.000', 0, null]
+                      ]
+                    : [
+                          [1, 'Edmund', 'Multigender'],
+                          [2, 'Kyleigh', 'Cis man']
+                      ]
+            );
+            i++;
+        } while (stmt.nextRowset());
+
+        expect(i).toEqual(2);
+
+        await stmt.close();
+    });
 });

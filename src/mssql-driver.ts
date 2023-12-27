@@ -146,7 +146,7 @@ class MssqlDriver extends PdoDriver {
     protected async getVersionFromConnection(connection: MssqlPoolConnection): Promise<string> {
         const request = new MssqlRequest(connection, 'SELECT @@version as version');
         const res = await request.execute();
-        return res[2][0][0].value.split('\n')[0];
+        return res[2][0][0][0].value.split('\n')[0];
     }
 }
 

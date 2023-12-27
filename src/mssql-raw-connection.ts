@@ -81,7 +81,7 @@ class MssqlRawConnection extends PdoRawConnection {
     protected async executeStatement(
         statement: MssqlPreparedRequest,
         bindings: Params
-    ): Promise<[string, PdoAffectingData, PdoRowData[], PdoColumnData[]]> {
+    ): Promise<[string, PdoAffectingData, PdoRowData[][] | PdoRowData[], PdoColumnData[][] | PdoColumnData[]]> {
         if (!Array.isArray(bindings)) {
             statement.sql = sqlColumnBindingsToAtP(statement.sql, bindings);
         }
@@ -100,7 +100,7 @@ class MssqlRawConnection extends PdoRawConnection {
     protected async doQuery(
         connection: MssqlPoolConnection,
         sql: string
-    ): Promise<[PdoAffectingData, PdoRowData[], PdoColumnData[]]> {
+    ): Promise<[PdoAffectingData, PdoRowData[][] | PdoRowData[], PdoColumnData[][] | PdoColumnData[]]> {
         const request = new MssqlRequest(connection, sql);
         const [pdoAffectingData, ...rest] = this.adaptResponse(...(await request.execute()));
         if (!this.inTransaction) {
@@ -121,34 +121,44 @@ class MssqlRawConnection extends PdoRawConnection {
             : new MssqlRequest(connection, sql);
         const res = name ? await request.execute(bindings) : await request.execute();
         if (name) {
-            return res[2].length > 0 ? res[2][0][0].value : 0;
+            return res[2][0].length > 0 ? res[2][0][0][0].value : 0;
         } else {
-            const row = res[2].pop() as any[];
+            const row = res[2][0].pop() as any[];
             return row[0].value;
         }
     }
 
     protected adaptResponse(
-        columns: ColumnMetaData[],
+        columns: ColumnMetaData[][],
         rowCount: number,
-        rows: ColumnValue[][]
-    ): [PdoAffectingData, PdoRowData[], PdoColumnData[]] {
+        rows: ColumnValue[][][]
+    ): [PdoAffectingData, PdoRowData[][] | PdoRowData[], PdoColumnData[][] | PdoColumnData[]] {
         return [
             {
                 affectedRows: rowCount
             },
-            rows.map((row: ColumnValue[]) => this.adaptRow(row)),
-            columns.map(column => {
-                return {
-                    name: column.colName,
-                    table: '',
-                    type: column.type,
-                    dataLength: column.dataLength,
-                    scale: column.scale,
-                    precision: column.precision
-                };
-            })
+            rows.length > 1
+                ? rows.map(rowSet => {
+                      return rowSet.map((row: ColumnValue[]) => this.adaptRow(row));
+                  })
+                : (rows[0] ?? []).map((row: ColumnValue[]) => this.adaptRow(row)),
+            columns.length > 1
+                ? columns.map(columnSet => {
+                      return columnSet.map(column => this.adaptColumn(column));
+                  })
+                : (columns[0] ?? []).map(column => this.adaptColumn(column))
         ];
+    }
+
+    protected adaptColumn(column: ColumnMetaData): any {
+        return {
+            name: column.colName,
+            table: '',
+            type: column.type,
+            dataLength: column.dataLength,
+            scale: column.scale,
+            precision: column.precision
+        };
     }
 
     protected adaptRow(row: ColumnValue[]): PdoRowData {
