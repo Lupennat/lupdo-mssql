@@ -200,78 +200,78 @@ describe('Mssql Tedious Date Types', () => {
         let stmt = new MssqlPreparedRequest(connection, 'INSERT INTO ted_test_date (date) values (?);', false);
         let res = await stmt.execute([TypedBinding.create(PARAM_DATE, '2023-01-02 23:59:59.999')]);
         res = await new MssqlRequest(connection, 'SELECT CAST(@@IDENTITY AS bigInt);').execute();
-        let id = res[2][0][0].value;
+        let id = res[2][0][0][0].value;
         res = await new MssqlRequest(connection, 'SELECT date FROM ted_test_date WHERE id = ' + id).execute();
         let cast = await new MssqlRequest(
             connection,
             "SELECT CAST('2023-01-02 23:59:59.999' AS date) AS 'date';"
         ).execute();
-        expect(res[2][0][0].value).toBe(cast[2][0][0].value);
-        expect(res[2][0][0].value).toBe('2023-01-02');
+        expect(res[2][0][0][0].value).toBe(cast[2][0][0][0].value);
+        expect(res[2][0][0][0].value).toBe('2023-01-02');
 
         stmt = new MssqlPreparedRequest(connection, 'INSERT INTO ted_test_smalldatetime (date) values (?);', false);
         res = await stmt.execute([TypedBinding.create(MSSQL_PARAM_SMALLDATETIME, '2023-01-02 23:59:59.999')]);
         res = await new MssqlRequest(connection, 'SELECT CAST(@@IDENTITY AS bigInt);').execute();
-        id = res[2][0][0].value;
+        id = res[2][0][0][0].value;
         res = await new MssqlRequest(connection, 'SELECT date FROM ted_test_smalldatetime WHERE id = ' + id).execute();
         cast = await new MssqlRequest(
             connection,
             "SELECT CAST('2023-01-02 23:59:59.999' AS smalldatetime) AS 'date';"
         ).execute();
-        expect(res[2][0][0].value).not.toBe(cast[2][0][0].value);
+        expect(res[2][0][0][0].value).not.toBe(cast[2][0][0][0].value);
         // WRONG DATA STORED ON DB
-        expect(res[2][0][0].value).toBe('2023-01-03 23:59:00.000');
-        expect(cast[2][0][0].value).toBe('2023-01-03 00:00:00.000');
+        expect(res[2][0][0][0].value).toBe('2023-01-03 23:59:00.000');
+        expect(cast[2][0][0][0].value).toBe('2023-01-03 00:00:00.000');
 
         stmt = new MssqlPreparedRequest(connection, 'INSERT INTO ted_test_datetime (date) values (?);', false);
         res = await stmt.execute([TypedBinding.create(PARAM_DATETIME, '2023-01-02 23:59:59.999')]);
         res = await new MssqlRequest(connection, 'SELECT CAST(@@IDENTITY AS bigInt);').execute();
-        id = res[2][0][0].value;
+        id = res[2][0][0][0].value;
         res = await new MssqlRequest(connection, 'SELECT date FROM ted_test_datetime WHERE id = ' + id).execute();
         cast = await new MssqlRequest(
             connection,
             "SELECT CAST('2023-01-02 23:59:59.999' AS datetime) AS 'date';"
         ).execute();
-        expect(res[2][0][0].value).toBe(cast[2][0][0].value);
-        expect(res[2][0][0].value).toBe('2023-01-03 00:00:00.000');
+        expect(res[2][0][0][0].value).toBe(cast[2][0][0][0].value);
+        expect(res[2][0][0][0].value).toBe('2023-01-03 00:00:00.000');
 
         stmt = new MssqlPreparedRequest(connection, 'INSERT INTO ted_test_datetime2 (date) values (?);', false);
         res = await stmt.execute([TypedBinding.create(PARAM_TIMESTAMP, '2023-01-02 23:59:59.999')]);
         res = await new MssqlRequest(connection, 'SELECT CAST(@@IDENTITY AS bigInt);').execute();
-        id = res[2][0][0].value;
+        id = res[2][0][0][0].value;
         res = await new MssqlRequest(connection, 'SELECT date FROM ted_test_datetime2 WHERE id = ' + id).execute();
         cast = await new MssqlRequest(
             connection,
             "SELECT CAST('2023-01-02 23:59:59.999' AS datetime2) AS 'date';"
         ).execute();
-        expect(res[2][0][0].value).toBe(cast[2][0][0].value);
-        expect(res[2][0][0].value).toBe('2023-01-02 23:59:59.9990000');
+        expect(res[2][0][0][0].value).toBe(cast[2][0][0][0].value);
+        expect(res[2][0][0][0].value).toBe('2023-01-02 23:59:59.9990000');
 
         stmt = new MssqlPreparedRequest(connection, 'INSERT INTO ted_test_datetimeoffset (date) values (?);', false);
         res = await stmt.execute([TypedBinding.create(PARAM_DATETIMEZONE, '2023-01-02 23:59:59.999')]);
         res = await new MssqlRequest(connection, 'SELECT CAST(@@IDENTITY AS bigInt);').execute();
-        id = res[2][0][0].value;
+        id = res[2][0][0][0].value;
         res = await new MssqlRequest(connection, 'SELECT date FROM ted_test_datetimeoffset WHERE id = ' + id).execute();
         cast = await new MssqlRequest(
             connection,
             "SELECT CAST('2023-01-02 23:59:59.999' AS datetimeoffset) AS 'date';"
         ).execute();
-        expect(res[2][0][0].value).not.toBe(cast[2][0][0].value);
-        expect(res[2][0][0].value).toBe('2023-01-02 23:59:59.9990000+01:00');
+        expect(res[2][0][0][0].value).not.toBe(cast[2][0][0][0].value);
+        expect(res[2][0][0][0].value).toBe('2023-01-02 23:59:59.9990000+01:00');
         // STRING SHOULD BE '2023-01-02 23:59:59.999 +00:00' ORIGINAL VALUE IS COMPLETLY LOST
-        expect(cast[2][0][0].value).toBe('2023-01-03 00:59:59.9990000+01:00');
+        expect(cast[2][0][0][0].value).toBe('2023-01-03 00:59:59.9990000+01:00');
 
         stmt = new MssqlPreparedRequest(connection, 'INSERT INTO ted_test_time (time) values (?);', false);
         res = await stmt.execute([TypedBinding.create(PARAM_TIME, '2023-01-02 23:59:59.999')]);
         res = await new MssqlRequest(connection, 'SELECT CAST(@@IDENTITY AS bigInt);').execute();
-        id = res[2][0][0].value;
+        id = res[2][0][0][0].value;
         res = await new MssqlRequest(connection, 'SELECT time FROM ted_test_time WHERE id = ' + id).execute();
         cast = await new MssqlRequest(
             connection,
             "SELECT CAST('2023-01-02 23:59:59.999' AS time) AS 'date';"
         ).execute();
-        expect(res[2][0][0].value).toBe(cast[2][0][0].value);
-        expect(res[2][0][0].value).toBe('23:59:59.9990000');
+        expect(res[2][0][0][0].value).toBe(cast[2][0][0][0].value);
+        expect(res[2][0][0][0].value).toBe('23:59:59.9990000');
     });
 
     it('Works Tedious Date Types As String From Tedious Date use UTC', async () => {
@@ -280,19 +280,19 @@ describe('Mssql Tedious Date Types', () => {
         let stmt = new MssqlPreparedRequest(connectionUtc, 'INSERT INTO ted_test_date (date) values (?);', false);
         let res = await stmt.execute([TypedBinding.create(PARAM_DATE, '2023-01-02 23:59:59.999')]);
         res = await new MssqlRequest(connectionUtc, 'SELECT CAST(@@IDENTITY AS bigInt);').execute();
-        let id = res[2][0][0].value;
+        let id = res[2][0][0][0].value;
         res = await new MssqlRequest(connectionUtc, 'SELECT date FROM ted_test_date WHERE id = ' + id).execute();
         let cast = await new MssqlRequest(
             connectionUtc,
             "SELECT CAST('2023-01-02 22:59:59.999' AS date) AS 'date';"
         ).execute();
-        expect(res[2][0][0].value).toBe(cast[2][0][0].value);
-        expect(res[2][0][0].value).toBe('2023-01-02');
+        expect(res[2][0][0][0].value).toBe(cast[2][0][0][0].value);
+        expect(res[2][0][0][0].value).toBe('2023-01-02');
 
         stmt = new MssqlPreparedRequest(connectionUtc, 'INSERT INTO ted_test_smalldatetime (date) values (?);', false);
         res = await stmt.execute([TypedBinding.create(MSSQL_PARAM_SMALLDATETIME, '2023-01-02 23:59:59.999')]);
         res = await new MssqlRequest(connectionUtc, 'SELECT CAST(@@IDENTITY AS bigInt);').execute();
-        id = res[2][0][0].value;
+        id = res[2][0][0][0].value;
         res = await new MssqlRequest(
             connectionUtc,
             'SELECT date FROM ted_test_smalldatetime WHERE id = ' + id
@@ -301,39 +301,39 @@ describe('Mssql Tedious Date Types', () => {
             connectionUtc,
             "SELECT CAST('2023-01-02 22:59:59.999' AS smalldatetime) AS 'date';"
         ).execute();
-        expect(res[2][0][0].value).not.toBe(cast[2][0][0].value);
+        expect(res[2][0][0][0].value).not.toBe(cast[2][0][0][0].value);
         // WRONG DATA STORED ON DB SHOULD BE 2023-01-03 00:00:00.000
-        expect(res[2][0][0].value).toBe('2023-01-02 23:59:00.000');
-        expect(cast[2][0][0].value).toBe('2023-01-03 00:00:00.000');
+        expect(res[2][0][0][0].value).toBe('2023-01-02 23:59:00.000');
+        expect(cast[2][0][0][0].value).toBe('2023-01-03 00:00:00.000');
 
         stmt = new MssqlPreparedRequest(connectionUtc, 'INSERT INTO ted_test_datetime (date) values (?);', false);
         res = await stmt.execute([TypedBinding.create(PARAM_DATETIME, '2023-01-02 23:59:59.999')]);
         res = await new MssqlRequest(connectionUtc, 'SELECT CAST(@@IDENTITY AS bigInt);').execute();
-        id = res[2][0][0].value;
+        id = res[2][0][0][0].value;
         res = await new MssqlRequest(connectionUtc, 'SELECT date FROM ted_test_datetime WHERE id = ' + id).execute();
         cast = await new MssqlRequest(
             connectionUtc,
             "SELECT CAST('2023-01-02 22:59:59.999' AS datetime) AS 'date';"
         ).execute();
-        expect(res[2][0][0].value).toBe(cast[2][0][0].value);
-        expect(res[2][0][0].value).toBe('2023-01-03 00:00:00.000');
+        expect(res[2][0][0][0].value).toBe(cast[2][0][0][0].value);
+        expect(res[2][0][0][0].value).toBe('2023-01-03 00:00:00.000');
 
         stmt = new MssqlPreparedRequest(connectionUtc, 'INSERT INTO ted_test_datetime2 (date) values (?);', false);
         res = await stmt.execute([TypedBinding.create(PARAM_TIMESTAMP, '2023-01-02 23:59:59.999')]);
         res = await new MssqlRequest(connectionUtc, 'SELECT CAST(@@IDENTITY AS bigInt);').execute();
-        id = res[2][0][0].value;
+        id = res[2][0][0][0].value;
         res = await new MssqlRequest(connectionUtc, 'SELECT date FROM ted_test_datetime2 WHERE id = ' + id).execute();
         cast = await new MssqlRequest(
             connectionUtc,
             "SELECT CAST('2023-01-02 22:59:59.999' AS datetime2) AS 'date';"
         ).execute();
-        expect(res[2][0][0].value).toBe(cast[2][0][0].value);
-        expect(res[2][0][0].value).toBe('2023-01-02 23:59:59.9990000');
+        expect(res[2][0][0][0].value).toBe(cast[2][0][0][0].value);
+        expect(res[2][0][0][0].value).toBe('2023-01-02 23:59:59.9990000');
 
         stmt = new MssqlPreparedRequest(connectionUtc, 'INSERT INTO ted_test_datetimeoffset (date) values (?);', false);
         res = await stmt.execute([TypedBinding.create(PARAM_DATETIMEZONE, '2023-01-02 23:59:59.999 +00:00')]);
         res = await new MssqlRequest(connectionUtc, 'SELECT CAST(@@IDENTITY AS bigInt);').execute();
-        id = res[2][0][0].value;
+        id = res[2][0][0][0].value;
         res = await new MssqlRequest(
             connectionUtc,
             'SELECT date FROM ted_test_datetimeoffset WHERE id = ' + id
@@ -342,21 +342,21 @@ describe('Mssql Tedious Date Types', () => {
             connectionUtc,
             "SELECT CAST('2023-01-02 23:59:59.999 +00:00' AS datetimeoffset) AS 'date';"
         ).execute();
-        expect(res[2][0][0].value).toBe(cast[2][0][0].value);
+        expect(res[2][0][0][0].value).toBe(cast[2][0][0][0].value);
         // STRING SHOULD BE '2023-01-02 23:59:59.999+00:00' ORIGINAL VALUE IS COMPLETLY LOST
-        expect(res[2][0][0].value).toBe('2023-01-03 00:59:59.9990000+01:00');
+        expect(res[2][0][0][0].value).toBe('2023-01-03 00:59:59.9990000+01:00');
 
         stmt = new MssqlPreparedRequest(connectionUtc, 'INSERT INTO ted_test_time (time) values (?);', false);
         res = await stmt.execute([TypedBinding.create(PARAM_TIME, '2023-01-02 23:59:59.999')]);
         res = await new MssqlRequest(connectionUtc, 'SELECT CAST(@@IDENTITY AS bigInt);').execute();
-        id = res[2][0][0].value;
+        id = res[2][0][0][0].value;
         res = await new MssqlRequest(connectionUtc, 'SELECT time FROM ted_test_time WHERE id = ' + id).execute();
         cast = await new MssqlRequest(
             connectionUtc,
             "SELECT CAST('2023-01-02 22:59:59.999' AS time) AS 'date';"
         ).execute();
-        expect(res[2][0][0].value).toBe(cast[2][0][0].value);
+        expect(res[2][0][0][0].value).toBe(cast[2][0][0][0].value);
         // WRONG DATA STORED SHOULD RETURN 23:59:59.9990000
-        expect(res[2][0][0].value).toBe('22:59:59.9990000');
+        expect(res[2][0][0][0].value).toBe('22:59:59.9990000');
     });
 });

@@ -1,6 +1,6 @@
 {
     "name": "lupdo-mssql",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "description": "Sql Server Driver For Lupdo",
     "author": "Claudio Pennati <claudio.pennati@gmail.com>",
     "license": "MIT",
@@ -53,7 +53,7 @@
         "db:down": "docker compose -f docker-compose.yml down -v"
     },
     "engines": {
-        "node": "^14.19.0 || ^16.10.0 || >=18.0.0"
+        "node": "^16.10.0 || >=18.0.0"
     },
     "devDependencies": {
         "@types/jest": "^29.2.4",
@@ -73,7 +73,7 @@
     },
     "dependencies": {
         "@js-temporal/polyfill": "0.4.3",
-        "lupdo": "^3.3.0",
+        "lupdo": "^3.4.0",
         "tedious-better-data-types": "^16.1.2",
         "tslib": "^2.4.1"
     }

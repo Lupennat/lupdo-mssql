@@ -3,10 +3,12 @@ import { ColumnMetaData, ColumnValue } from 'tedious-better-data-types';
 import MssqlRequest from './mssql-request';
 
 class MssqlPreparedRequest extends MssqlRequest {
-    public async execute(bindings?: Params): Promise<[ColumnMetaData[], number, ColumnValue[][]]> {
+    public async execute(bindings?: Params): Promise<[ColumnMetaData[][], number, ColumnValue[][][]]> {
         this.rows = [];
         this.columns = [];
         this.rowCount = 0;
+        this.cursor = -1;
+
         return await this.convertRequestToPromise(bindings);
     }
 
